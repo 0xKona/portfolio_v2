@@ -93,7 +93,11 @@ applyProjectTags(dataStack, 'Data');
 // Customize Cognito User Pool name
 const environment = process.env.AWS_BRANCH || 'local';
 const { cfnUserPool } = backend.auth.resources.cfnResources;
+
 cfnUserPool.userPoolName = `portfolio-v2-${environment}-users`;
+cfnUserPool.adminCreateUserConfig = {
+  allowAdminCreateUserOnly: true
+}
 
 // Customize User Pool Client name
 const { cfnUserPoolClient } = backend.auth.resources.cfnResources;
