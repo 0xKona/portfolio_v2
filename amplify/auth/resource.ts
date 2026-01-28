@@ -8,10 +8,13 @@ export const auth = defineAuth({
   loginWith: {
     email: true,
   },
+<<<<<<< HEAD
   userAttributes: {
     email: {
       required: true,
       mutable: false,
     }
   },
+=======
+>>>>>>> 1bbc828 (run create amplify)
 });
