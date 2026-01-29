@@ -52,3 +52,8 @@ cfnUserPoolClient.clientName = `portfolio-v2-${environment}-client`;
 // S3 Bucket
 const { cfnBucket } = backend.storage.resources.cfnResources;
 cfnBucket.bucketName = `portfolio-v2-${environment}-images`;
+
+// DynamoDB Tables
+const { cfnResources } = backend.data.resources;
+cfnResources.cfnTables['Skill'].tableName = `portfolio-v2-${environment}-Skill`;
+cfnResources.cfnTables['Project'].tableName = `portfolio-v2-${environment}-Project`;
