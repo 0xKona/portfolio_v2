@@ -1,0 +1,5 @@
+node_modules
+.next
+.amplify
+amplify_outputs.json
+package-lock.json
