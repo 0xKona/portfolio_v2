@@ -55,5 +55,13 @@ cfnBucket.bucketName = `portfolio-v2-${environment}-images`;
 
 // DynamoDB Tables
 const { cfnResources } = backend.data.resources;
-cfnResources.cfnTables['Skill'].tableName = `portfolio-v2-${environment}-Skill`;
-cfnResources.cfnTables['Project'].tableName = `portfolio-v2-${environment}-Project`;
+const tables = cfnResources.cfnTables;
+
+Object.entries(tables).forEach(([key, table]) => {
+  const modelName = key.split('-')[0]; // Extract model name from generated key
+  if (modelName === 'Skill') {
+    table.tableName = `portfolio-v2-${environment}-Skill`;
+  } else if (modelName === 'Project') {
+    table.tableName = `portfolio-v2-${environment}-Project`;
+  }
+});

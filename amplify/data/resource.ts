@@ -3,7 +3,7 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 // Database schema
 const schema = a.schema({
   // Skill Model
-  Skill: a.model({
+  PortfolioSkillV2: a.model({
     name: a.string().required(),
     displayName: a.string().required(),
     lucideIconName: a.string(),
@@ -14,29 +14,29 @@ const schema = a.schema({
   ]),
   
   // Custom Type for a image
-  ProjectImage: a.customType({
+  PortfolioProjectImageV2: a.customType({
     url: a.string().required(),
     alt: a.string().required(),
     caption: a.string(),
   }),
 
   // Custom enum
-  ProjectStatus: a.enum([
+  PortfolioProjectStatusV2: a.enum([
     'published',
     'draft',
   ]),
 
   // Project Model
-  Project: a.model({
+  PortfolioProjectV2: a.model({
     name: a.string().required(),
     desc: a.string(),
-    images: a.ref('ProjectImage').array(),
+    images: a.ref('PortfolioProjectImageV2').array(),
     video: a.string(),
     skills: a.string().array(),
     githubUrl: a.string(),
     demoUrl: a.string(),
     isFeatured: a.boolean().required(),
-    status: a.ref('ProjectStatus').required(),
+    status: a.ref('PortfolioProjectStatusV2').required(),
   }).authorization((allow) => [
       allow.guest().to(["read"]),
       allow.authenticated().to(["read", "create", "update", "delete"])
@@ -50,6 +50,7 @@ export const data = defineData({
   authorizationModes: {
     defaultAuthorizationMode: 'identityPool',
   },
+  name: 'portfolio_v2_data',
 });
 
 /*== STEP 2 ===============================================================

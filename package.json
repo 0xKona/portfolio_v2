@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sandbox:start": "npx ampx sandbox",
+    "sandbox:delete": "npx ampx sandbox delete"
   },
   "dependencies": {
     "aws-amplify": "^6.16.0",
