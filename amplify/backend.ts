@@ -1,6 +1,7 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
+import { storage } from './storage/resource';
 import { Stack, Tags } from 'aws-cdk-lib';
 
 /**
@@ -9,6 +10,7 @@ import { Stack, Tags } from 'aws-cdk-lib';
 const backend = defineBackend({
   auth,
   data,
+  storage
 });
 
 function applyProjectTags(stack: Stack, component: string) {
@@ -25,10 +27,12 @@ function applyProjectTags(stack: Stack, component: string) {
 // Get the underlying CDK stacks
 const authStack = Stack.of(backend.auth.resources.userPool);
 const dataStack = Stack.of(backend.data);
+const storageStack = Stack.of(backend.storage.resources.bucket);
 
 // Apply tags to auth stack
 applyProjectTags(authStack, 'Auth');
 applyProjectTags(dataStack, 'Data');
+applyProjectTags(storageStack, 'Storage');
 
 /*========== NAMING RESOURCES ==========*/
 
@@ -44,3 +48,7 @@ cfnUserPool.adminCreateUserConfig = {
 // Customize User Pool Client name
 const { cfnUserPoolClient } = backend.auth.resources.cfnResources;
 cfnUserPoolClient.clientName = `portfolio-v2-${environment}-client`;
+
+// S3 Bucket
+const { cfnBucket } = backend.storage.resources.cfnResources;
+cfnBucket.bucketName = `portfolio-v2-${environment}-images`;
