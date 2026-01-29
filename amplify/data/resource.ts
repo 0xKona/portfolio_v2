@@ -1,17 +1,46 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any unauthenticated user can "create", "read", "update", 
-and "delete" any "Todo" records.
-=========================================================================*/
+// Database schema
 const schema = a.schema({
-  Todo: a
-    .model({
-      content: a.string(),
-    })
-    .authorization((allow) => [allow.guest()]),
+  // Skill Model
+  Skill: a.model({
+    name: a.string().required(),
+    displayName: a.string().required(),
+    lucideIconName: a.string(),
+    type: a.enum(['language', 'framework', 'platform']),
+  }).authorization((allow) => [
+      allow.guest().to(["read"]),
+      allow.authenticated().to(["read", "create", "update", "delete"])
+  ]),
+  
+  // Custom Type for a image
+  ProjectImage: a.customType({
+    url: a.string().required(),
+    alt: a.string().required(),
+    caption: a.string(),
+  }),
+
+  // Custom enum
+  ProjectStatus: a.enum([
+    'published',
+    'draft',
+  ]),
+
+  // Project Model
+  Project: a.model({
+    name: a.string().required(),
+    desc: a.string(),
+    images: a.ref('ProjectImage').array(),
+    video: a.string(),
+    skills: a.string().array(),
+    githubUrl: a.string(),
+    demoUrl: a.string(),
+    isFeatured: a.boolean().required(),
+    status: a.ref('ProjectStatus').required(),
+  }).authorization((allow) => [
+      allow.guest().to(["read"]),
+      allow.authenticated().to(["read", "create", "update", "delete"])
+  ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
