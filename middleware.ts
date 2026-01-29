@@ -4,29 +4,34 @@ import { createServerRunner } from '@aws-amplify/adapter-nextjs';
 import outputs from './amplify_outputs.json';
 
 export async function middleware(request: NextRequest) {
-    const response = NextResponse.next();
+  const response = NextResponse.next();
 
-    const { runWithAmplifyServerContext } = createServerRunner({ config: outputs });
+  const { runWithAmplifyServerContext } = createServerRunner({
+    config: outputs,
+  });
 
-    const authenticated = await runWithAmplifyServerContext({
+  const authenticated = await runWithAmplifyServerContext({
     nextServerContext: { request, response },
     operation: async (contextSpec) => {
-        try {
+      try {
         const session = await fetchAuthSession(contextSpec);
         return session.tokens !== undefined;
-        } catch {
+      } catch {
         return false;
-        }
+      }
     },
-    });
+  });
 
-    if (!authenticated) {
-        return NextResponse.redirect(
-        new URL(`/signin?redirect=${encodeURIComponent(request.nextUrl.pathname)}`, request.url)
-        );
-    }
+  if (!authenticated) {
+    return NextResponse.redirect(
+      new URL(
+        `/signin?redirect=${encodeURIComponent(request.nextUrl.pathname)}`,
+        request.url
+      )
+    );
+  }
 
-    return response;
+  return response;
 }
 
 export const config = {

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Authenticator } from "@aws-amplify/ui-react";
-import { Amplify } from "aws-amplify";
-import outputs from "@/amplify_outputs.json";
+import React from 'react';
+import { Authenticator } from '@aws-amplify/ui-react';
+import { Amplify } from 'aws-amplify';
+import outputs from '@/amplify_outputs.json';
 
 // Re-configure Amplify here with SSR support, important for Next.js
 Amplify.configure(outputs, { ssr: true });

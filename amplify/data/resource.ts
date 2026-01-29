@@ -3,16 +3,18 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 // Database schema
 const schema = a.schema({
   // Skill Model
-  PortfolioSkillV2: a.model({
-    name: a.string().required(),
-    displayName: a.string().required(),
-    lucideIconName: a.string(),
-    type: a.enum(['language', 'framework', 'platform']),
-  }).authorization((allow) => [
-      allow.guest().to(["read"]),
-      allow.authenticated().to(["read", "create", "update", "delete"])
-  ]),
-  
+  PortfolioSkillV2: a
+    .model({
+      name: a.string().required(),
+      displayName: a.string().required(),
+      lucideIconName: a.string(),
+      type: a.enum(['language', 'framework', 'platform']),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['read']),
+      allow.authenticated().to(['read', 'create', 'update', 'delete']),
+    ]),
+
   // Custom Type for a image
   PortfolioProjectImageV2: a.customType({
     url: a.string().required(),
@@ -21,26 +23,25 @@ const schema = a.schema({
   }),
 
   // Custom enum
-  PortfolioProjectStatusV2: a.enum([
-    'published',
-    'draft',
-  ]),
+  PortfolioProjectStatusV2: a.enum(['published', 'draft']),
 
   // Project Model
-  PortfolioProjectV2: a.model({
-    name: a.string().required(),
-    desc: a.string(),
-    images: a.ref('PortfolioProjectImageV2').array(),
-    video: a.string(),
-    skills: a.string().array(),
-    githubUrl: a.string(),
-    demoUrl: a.string(),
-    isFeatured: a.boolean().required(),
-    status: a.ref('PortfolioProjectStatusV2').required(),
-  }).authorization((allow) => [
-      allow.guest().to(["read"]),
-      allow.authenticated().to(["read", "create", "update", "delete"])
-  ]),
+  PortfolioProjectV2: a
+    .model({
+      name: a.string().required(),
+      desc: a.string(),
+      images: a.ref('PortfolioProjectImageV2').array(),
+      video: a.string(),
+      skills: a.string().array(),
+      githubUrl: a.string(),
+      demoUrl: a.string(),
+      isFeatured: a.boolean().required(),
+      status: a.ref('PortfolioProjectStatusV2').required(),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['read']),
+      allow.authenticated().to(['read', 'create', 'update', 'delete']),
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

@@ -4,16 +4,13 @@ import { signOut } from 'aws-amplify/auth';
 import { useRouter } from 'next/navigation';
 
 export default function Signout() {
+  const router = useRouter();
 
-    const router = useRouter();
+  const handleSignOut = async () => {
+    await signOut();
+    router.replace('/');
+    router.refresh();
+  };
 
-    const handleSignOut = async () => {
-        await signOut();
-        router.replace('/');
-        router.refresh();
-    };
-
-    return (
-        <button onClick={handleSignOut}>Sign Out</button>
-    )
+  return <button onClick={handleSignOut}>Sign Out</button>;
 }

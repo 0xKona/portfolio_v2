@@ -12,6 +12,6 @@ export const auth = defineAuth({
     email: {
       required: true,
       mutable: false,
-    }
+    },
   },
 });

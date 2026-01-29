@@ -10,13 +10,13 @@ import { Stack, Tags } from 'aws-cdk-lib';
 const backend = defineBackend({
   auth,
   data,
-  storage
+  storage,
 });
 
 function applyProjectTags(stack: Stack, component: string) {
   const environment = process.env.AWS_BRANCH || process.env.NODE_ENV || 'local';
   const branch = process.env.AWS_BRANCH || 'local';
-  
+
   Tags.of(stack).add('Application', 'Portfolio');
   Tags.of(stack).add('Component', component);
   Tags.of(stack).add('Environment', environment);
@@ -42,8 +42,8 @@ const { cfnUserPool } = backend.auth.resources.cfnResources;
 
 cfnUserPool.userPoolName = `portfolio-v2-${environment}-users`;
 cfnUserPool.adminCreateUserConfig = {
-  allowAdminCreateUserOnly: true
-}
+  allowAdminCreateUserOnly: true,
+};
 
 // Customize User Pool Client name
 const { cfnUserPoolClient } = backend.auth.resources.cfnResources;
