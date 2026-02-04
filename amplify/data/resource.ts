@@ -32,7 +32,8 @@ const schema = a.schema({
     desc: a.string(),
     images: a.ref('PortfolioProjectImageV2').array(),
     video: a.string(),
-    skills: a.ref('PortfolioSkillV2').array(),
+    // store skill identifiers or names as strings instead of referencing the model
+    skills: a.string().array(),
     githubUrl: a.string(),
     demoUrl: a.string(),
     isFeatured: a.boolean().required(),
