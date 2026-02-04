@@ -32,7 +32,7 @@ const schema = a.schema({
     desc: a.string(),
     images: a.ref('PortfolioProjectImageV2').array(),
     video: a.string(),
-    skills: a.string().array(),
+    skills: a.ref('PortfolioSkillV2').array(),
     githubUrl: a.string(),
     demoUrl: a.string(),
     isFeatured: a.boolean().required(),
