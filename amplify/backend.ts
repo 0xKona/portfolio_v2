@@ -29,11 +29,6 @@ const authStack = Stack.of(backend.auth.resources.userPool);
 const dataStack = Stack.of(backend.data);
 const storageStack = Stack.of(backend.storage.resources.bucket);
 
-// Apply tags to auth stack
-applyProjectTags(authStack, 'Auth');
-applyProjectTags(dataStack, 'Data');
-applyProjectTags(storageStack, 'Storage');
-
 /*========== NAMING RESOURCES ==========*/
 
 // Customize Cognito User Pool name
@@ -69,3 +64,4 @@ Object.entries(tables).forEach(([key, table]) => {
 // Apply tags to auth stack
 applyProjectTags(authStack, 'Auth');
 applyProjectTags(dataStack, 'Data');
+applyProjectTags(storageStack, 'Storage');
