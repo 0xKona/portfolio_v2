@@ -14,8 +14,8 @@ const backend = defineBackend({
 });
 
 function applyProjectTags(stack: Stack, component: string) {
-  const environment = process.env.AWS_BRANCH || process.env.NODE_ENV || 'local';
-  const branch = process.env.AWS_BRANCH || 'local';
+  const environment = process.env.AWS_BRANCH || process.env.NODE_ENV || 'sandbox';
+  const branch = process.env.AWS_BRANCH || 'sandbox';
   
   Tags.of(stack).add('Application', 'Portfolio');
   Tags.of(stack).add('Component', component);
@@ -32,21 +32,24 @@ const storageStack = Stack.of(backend.storage.resources.bucket);
 /*========== NAMING RESOURCES ==========*/
 
 // Customize Cognito User Pool name
-const environment = process.env.AWS_BRANCH || 'local';
+const environment = process.env.AWS_BRANCH || 'sandbox';
+// Use AWS account ID suffix (last 8 chars) - this ensures same name per AWS account + environment
+// so resources persist across redeployments in the same environment/account
+const accountIdSuffix = process.env.AWS_ACCOUNT_ID?.slice(-8) || 'TESTER'.slice(0, 8);
 const { cfnUserPool } = backend.auth.resources.cfnResources;
 
-cfnUserPool.userPoolName = `portfolio-v2-${environment}-users`;
+cfnUserPool.userPoolName = `portfolio-v2-users-${environment}-${accountIdSuffix}`;
 cfnUserPool.adminCreateUserConfig = {
   allowAdminCreateUserOnly: true
 }
 
 // Customize User Pool Client name
 const { cfnUserPoolClient } = backend.auth.resources.cfnResources;
-cfnUserPoolClient.clientName = `portfolio-v2-${environment}-client`;
+cfnUserPoolClient.clientName = `portfolio-v2-client-${environment}-${accountIdSuffix}`;
 
 // S3 Bucket
 const { cfnBucket } = backend.storage.resources.cfnResources;
-cfnBucket.bucketName = `portfolio-v2-${environment}-images`;
+cfnBucket.bucketName = `portfolio-v2-images-${environment}-${accountIdSuffix}`.toLowerCase();
 
 // DynamoDB Tables
 const { cfnResources } = backend.data.resources;
@@ -54,10 +57,10 @@ const tables = cfnResources.cfnTables;
 
 Object.entries(tables).forEach(([key, table]) => {
   const modelName = key.split('-')[0]; // Extract model name from generated key
-  if (modelName === 'Skill') {
-    table.tableName = `portfolio-v2-${environment}-Skill`;
-  } else if (modelName === 'Project') {
-    table.tableName = `portfolio-v2-${environment}-Project`;
+  if (modelName === 'PortfolioSkillV2') {
+    table.tableName = `portfolio-v2-skill-${environment}-${accountIdSuffix}`;
+  } else if (modelName === 'PortfolioProjectV2') {
+    table.tableName = `portfolio-v2-project-${environment}-${accountIdSuffix}`;
   }
 });
 
