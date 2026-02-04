@@ -7,11 +7,41 @@ specifies that any unauthenticated user can "create", "read", "update",
 and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-  Todo: a
-    .model({
-      content: a.string(),
-    })
-    .authorization((allow) => [allow.guest()]),
+  // Skill Model
+  Skill: a.model({
+    name: a.string(),
+    displayText: a.string(),
+    lucideIconName: a.string(),
+    type: a.string(),
+  }).authorization((allow) => [
+    allow.guest().to(['read']),
+    allow.authenticated().to(['create', 'update', 'delete']),
+  ]),
+
+  // Project Image Object
+  ProjectImage: a.customType({
+    url: a.string(),
+    alt: a.string(),
+    caption: a.string(),
+  }),
+
+  // Project Model
+  Project: a.model({
+    name: a.string(),
+    desc: a.string(),
+    images: a.ref('ProjectImage').array(),
+    video: a.string(),
+    skills: a.ref('Skill').array(), // References Skill table
+    githubUrl: a.string(),
+    demoUrl: a.string(),
+    isFeatured: a.boolean(),
+    createdAt: a.datetime(),
+    updatedAt: a.datetime(),
+    status: a.string(), // 'published' | 'draft' - validate in app logic
+  }).authorization((allow) => [
+    allow.guest().to(['read']),
+    allow.authenticated().to(['create', 'update', 'delete']),
+  ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -19,7 +49,7 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'identityPool',
+    defaultAuthorizationMode: 'userPool',
   },
 });
 
