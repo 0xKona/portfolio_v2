@@ -1,7 +1,14 @@
+/**
+ * Landing page — the root page of the portfolio.
+ * Renders the ASCII hero section as the primary above-the-fold content.
+ */
+import { AsciiHero } from "@/components/landing/ascii-hero";
+
+/** Home — portfolio landing page */
 export default function Home() {
     return (
-        <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-            <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start"></main>
-        </div>
+        <main className="min-h-screen bg-black">
+            <AsciiHero firstName="CONNOR" lastName="ROBINSON" />
+        </main>
     );
 }
