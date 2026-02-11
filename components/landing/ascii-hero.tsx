@@ -1,11 +1,11 @@
-import { generateAsciiText } from "../../lib/ascii/ascii-text";
+import { generateAsciiText } from "../../lib/ascii/generate-ascii-text";
 
 interface AsciiHeroProps {
     firstName: string;
     lastName?: string;
 }
 
-export function AsciiHero({ firstName, lastName }: AsciiHeroProps) {
+export function AsciiHeroText({ firstName, lastName }: AsciiHeroProps) {
     const firstNameLines = generateAsciiText(firstName);
     const lastNameLines = lastName ? generateAsciiText(lastName) : [];
 
@@ -15,9 +15,8 @@ export function AsciiHero({ firstName, lastName }: AsciiHeroProps) {
         : firstNameLines;
 
     return (
-        <section className="flex flex-col items-center justify-center min-h-screen px-4">
+        <section className="flex flex-col items-center px-4">
             {/* Accessible heading hidden behind the decorative ASCII art */}
-            <h1 className="sr-only">The Portfolio of</h1>
             <h1 className="sr-only">
                 {firstName}
                 {lastName ? ` ${lastName}` : ""}

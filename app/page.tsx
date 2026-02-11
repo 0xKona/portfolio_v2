@@ -1,10 +1,10 @@
-import { AsciiHero } from "@/components/landing/ascii-hero";
+import { AsciiHeroText } from "@/components/landing/ascii-hero";
 
-/** Home — portfolio landing page */
+/** Home — Portfolio Landing Page */
 export default function Home() {
     return (
-        <main className="min-h-screen bg-black">
-            <AsciiHero firstName="CONNOR" lastName="ROBINSON" />
+        <main className="min-h-screen">
+            <AsciiHeroText firstName="CONNOR" lastName="ROBINSON" />
         </main>
     );
 }
