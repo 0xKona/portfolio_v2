@@ -35,7 +35,7 @@ const storageStack = Stack.of(backend.storage.resources.bucket);
 const environment = process.env.AWS_BRANCH || 'sandbox';
 // Use AWS account ID suffix (last 8 chars) - this ensures same name per AWS account + environment
 // so resources persist across redeployments in the same environment/account
-const accountIdSuffix = process.env.AWS_ACCOUNT_ID?.slice(-8) || 'TESTER'.slice(0, 8);
+const accountIdSuffix = process.env.AWS_ACCOUNT_ID?.slice(-8) || 'developer'.slice(0, 8);
 const { cfnUserPool } = backend.auth.resources.cfnResources;
 
 cfnUserPool.userPoolName = `portfolio-v2-users-${environment}-${accountIdSuffix}`;
