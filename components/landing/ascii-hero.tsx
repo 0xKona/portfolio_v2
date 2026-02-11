@@ -15,7 +15,7 @@ export function AsciiHeroText({ firstName, lastName }: AsciiHeroProps) {
         : firstNameLines;
 
     return (
-        <section className="flex flex-col items-center px-4">
+        <section className="flex flex-col items-center p-4">
             {/* Accessible heading hidden behind the decorative ASCII art */}
             <h1 className="sr-only">
                 {firstName}
