@@ -15,8 +15,8 @@ export const NAV_LINKS: NavigationLink[] = [
         route: '/projects'
     },
     {
-        name: 'contact',
-        displayText: 'CONTACT',
-        route: '/contact'
+        name: 'about',
+        displayText: 'ABOUT',
+        route: '/about'
     }
 ]

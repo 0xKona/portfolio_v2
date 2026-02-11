@@ -27,7 +27,7 @@ export function UnderConstruction({
         "█".repeat(filledBlocks) + "░".repeat(totalBlocks - filledBlocks);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[400px] px-4">
+        <div className="flex flex-col items-center justify-center min-h-100 px-4">
             {/* Terminal-style header */}
             <div className="text-neutral-600 text-sm mb-6">
                 <span className="text-neutral-500">$</span> building...
