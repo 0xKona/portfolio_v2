@@ -15,14 +15,14 @@ export function AsciiHeroText({ firstName, lastName }: AsciiHeroProps) {
         : firstNameLines;
 
     return (
-        <section className="flex flex-col items-center p-4">
+        <section className="gap-6 px-4 py-4">
             {/* Accessible heading hidden behind the decorative ASCII art */}
             <h1 className="sr-only">
                 {firstName}
                 {lastName ? ` ${lastName}` : ""}
             </h1>
 
-            {/* Main Text */}
+            {/* ASCII art name */}
             <pre
                 className="text-neutral-300 text-[8px] leading-none select-none sm:text-sm md:text-lg lg:text-xl xl:text-2xl mx-auto w-fit text-center"
                 aria-hidden="true"
