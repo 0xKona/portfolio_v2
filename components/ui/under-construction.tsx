@@ -1,6 +1,6 @@
 /**
  * UnderConstruction — Display component for pages/sections not yet completed.
- * Shows a chibi character hammering with a customizable message and progress bar.
+ * Shows a chibi character hammering with a customizable message.
  */
 import Image from "next/image";
 
