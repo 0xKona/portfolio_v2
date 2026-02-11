@@ -9,8 +9,8 @@ import outputs from "@/amplify_outputs.json";
 Amplify.configure(outputs, { ssr: true });
 
 const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // The Authenticator.Provider makes authentication state available globally
-  return <Authenticator.Provider>{children}</Authenticator.Provider>;
+    // The Authenticator.Provider makes authentication state available globally
+    return <Authenticator.Provider>{children}</Authenticator.Provider>;
 };
 
 export default Auth;
