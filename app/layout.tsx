@@ -1,16 +1,12 @@
-/**
- * Root layout — sets up the terminal-themed shell for the entire portfolio.
- * Configures monospace font, Amplify backend, and auth provider.
- */
 import type { Metadata } from "next";
-import { Geist_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import Auth from "@/components/auth/auth";
 
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+    variable: "--font-jetbrains-mono",
     subsets: ["latin"],
 });
 
@@ -34,7 +30,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`${geistMono.variable} font-mono bg-black text-neutral-300 antialiased`}
+                className={`${jetbrainsMono.variable} font-mono bg-black text-neutral-300 antialiased`}
             >
                 <Auth>{children}</Auth>
             </body>

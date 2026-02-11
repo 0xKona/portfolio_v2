@@ -17,13 +17,15 @@ export function AsciiHero({ firstName, lastName }: AsciiHeroProps) {
     return (
         <section className="flex flex-col items-center justify-center min-h-screen px-4">
             {/* Accessible heading hidden behind the decorative ASCII art */}
+            <h1 className="sr-only">The Portfolio of</h1>
             <h1 className="sr-only">
                 {firstName}
                 {lastName ? ` ${lastName}` : ""}
             </h1>
 
+            {/* Main Text */}
             <pre
-                className="text-neutral-300 text-[10px] leading-none select-none sm:text-sm md:text-lg lg:text-xl xl:text-2xl mx-auto w-fit text-center"
+                className="text-neutral-300 text-[8px] leading-none select-none sm:text-sm md:text-lg lg:text-xl xl:text-2xl mx-auto w-fit text-center"
                 aria-hidden="true"
             >
                 {allLines.join("\n")}
