@@ -8,7 +8,7 @@ export default function Home() {
         <main className="min-h-screen flex flex-col items-center pt-20">
             <AsciiHeroText firstName="CONNOR" lastName="ROBINSON" />
             <HeroTagline />
-            <UnderConstruction />
+            <UnderConstruction progress={50} />
         </main>
     );
 }
