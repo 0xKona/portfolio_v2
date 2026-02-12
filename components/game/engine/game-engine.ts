@@ -4,9 +4,13 @@ import { Coin, Collectible } from "./collectible";
 import {
     GAME_CONFIG,
     OBSTACLE_CONFIG,
+    DIFFICULTY_CONFIG,
     COIN_CONFIG,
     PLAYER_CONFIG,
     GameEventCallback,
+    ObstacleSpawnConfig,
+    ObstacleType,
+    Bounds,
 } from "./types";
 
 /**
@@ -28,6 +32,11 @@ export class GameEngine {
     private coins: number = 0;
     private isRunning: boolean = false;
     private isPaused: boolean = false;
+
+    // Difficulty and spawn tracking
+    private lastObstacleSpawn: number = 0;
+    private lastCoinSpawn: number = 0;
+    private readonly COIN_OBSTACLE_BUFFER = 60; // Min pixels between coins and obstacles
 
     private eventCallback: GameEventCallback | null = null;
 
@@ -96,6 +105,8 @@ export class GameEngine {
         this.frameCount = 0;
         this.score = 0;
         this.coins = 0;
+        this.lastObstacleSpawn = 0;
+        this.lastCoinSpawn = 0;
     }
 
     /** Handle player jump input */
@@ -145,15 +156,179 @@ export class GameEngine {
 
     /** Spawn new entities based on frame count */
     private spawnEntities(): void {
-        // Spawn obstacles
-        if (this.features.obstacles && this.frameCount % OBSTACLE_CONFIG.SPAWN_INTERVAL === 0) {
-            this.obstacles.push(new Obstacle());
+        const difficulty = this.getDifficulty();
+        const spawnInterval = this.getObstacleSpawnInterval(difficulty);
+
+        // Spawn obstacles with dynamic timing
+        if (this.features.obstacles && this.frameCount - this.lastObstacleSpawn >= spawnInterval) {
+            const config = this.generateObstacleConfig(difficulty);
+            this.obstacles.push(new Obstacle(config));
+            this.lastObstacleSpawn = this.frameCount;
         }
 
-        // Spawn coins (offset from obstacles)
-        if (this.features.coins && this.frameCount % COIN_CONFIG.SPAWN_INTERVAL === 50) {
-            this.collectibles.push(new Coin());
+        // Spawn coins with smart placement (avoid obstacles)
+        const coinInterval = COIN_CONFIG.SPAWN_INTERVAL;
+        if (this.features.coins && this.frameCount - this.lastCoinSpawn >= coinInterval) {
+            const coinPosition = this.findSafeCoinPosition();
+            if (coinPosition) {
+                this.collectibles.push(new Coin(coinPosition.x, coinPosition.y));
+                this.lastCoinSpawn = this.frameCount;
+            }
+        } 
+    }
+
+    /** Calculate current difficulty (0 to 1) */
+    private getDifficulty(): number {
+        const progress = this.frameCount / OBSTACLE_CONFIG.DIFFICULTY_RAMP_FRAMES;
+        return Math.min(progress, DIFFICULTY_CONFIG.MAX_DIFFICULTY);
+    }
+
+    /** Get spawn interval based on difficulty (larger = more space at start) */
+    private getObstacleSpawnInterval(difficulty: number): number {
+        const range = OBSTACLE_CONFIG.BASE_SPAWN_INTERVAL - OBSTACLE_CONFIG.MIN_SPAWN_INTERVAL;
+        return OBSTACLE_CONFIG.BASE_SPAWN_INTERVAL - range * difficulty;
+    }
+
+    /** Generate obstacle configuration based on current difficulty */
+    private generateObstacleConfig(difficulty: number): ObstacleSpawnConfig {
+        const type = this.pickObstacleType(difficulty);
+
+        let width: number;
+        let height: number;
+        let y: number;
+
+        switch (type) {
+            case "tall":
+                // Tall narrow obstacles
+                width = this.randomRange(OBSTACLE_CONFIG.MIN_WIDTH, OBSTACLE_CONFIG.MIN_WIDTH + 15);
+                height = this.randomRange(OBSTACLE_CONFIG.MAX_HEIGHT - 10, OBSTACLE_CONFIG.MAX_HEIGHT);
+                y = GAME_CONFIG.GROUND_HEIGHT - height;
+                break;
+
+            case "wide":
+                // Wide short obstacles
+                width = this.randomRange(OBSTACLE_CONFIG.MAX_WIDTH - 15, OBSTACLE_CONFIG.MAX_WIDTH);
+                height = this.randomRange(OBSTACLE_CONFIG.MIN_HEIGHT, OBSTACLE_CONFIG.MIN_HEIGHT + 20);
+                y = GAME_CONFIG.GROUND_HEIGHT - height;
+                break;
+
+            case "floating":
+                // Floating obstacles - must be jumpable under
+                width = this.randomRange(OBSTACLE_CONFIG.MIN_WIDTH, OBSTACLE_CONFIG.MIN_WIDTH + 20);
+                height = this.randomRange(OBSTACLE_CONFIG.FLOAT_MIN_HEIGHT, OBSTACLE_CONFIG.FLOAT_MAX_HEIGHT);
+                // Position so player can run under OR jump over
+                const maxFloatY = GAME_CONFIG.GROUND_HEIGHT - PLAYER_CONFIG.HEIGHT - 15; // Min clearance
+                const minFloatY = GAME_CONFIG.GROUND_HEIGHT - height - 80; // Max height to still jump over
+                y = this.randomRange(Math.max(50, minFloatY), maxFloatY - height);
+                break;
+
+            case "ground":
+            default:
+                // Standard ground obstacle with size variance based on difficulty
+                const sizeScale = 0.5 + difficulty * 0.5; // 50% to 100% of max size
+                width = this.randomRange(
+                    OBSTACLE_CONFIG.MIN_WIDTH,
+                    OBSTACLE_CONFIG.MIN_WIDTH + (OBSTACLE_CONFIG.MAX_WIDTH - OBSTACLE_CONFIG.MIN_WIDTH) * sizeScale
+                );
+                height = this.randomRange(
+                    OBSTACLE_CONFIG.MIN_HEIGHT,
+                    OBSTACLE_CONFIG.MIN_HEIGHT + (OBSTACLE_CONFIG.MAX_HEIGHT - OBSTACLE_CONFIG.MIN_HEIGHT) * sizeScale
+                );
+                y = GAME_CONFIG.GROUND_HEIGHT - height;
+                break;
         }
+
+        return { type, width, height, y };
+    }
+
+    /** Pick obstacle type based on difficulty-weighted chances */
+    private pickObstacleType(difficulty: number): ObstacleType {
+        const floatChance = this.lerp(DIFFICULTY_CONFIG.FLOAT_CHANCE_MIN, DIFFICULTY_CONFIG.FLOAT_CHANCE_MAX, difficulty);
+        const tallChance = this.lerp(DIFFICULTY_CONFIG.TALL_CHANCE_MIN, DIFFICULTY_CONFIG.TALL_CHANCE_MAX, difficulty);
+        const wideChance = this.lerp(DIFFICULTY_CONFIG.WIDE_CHANCE_MIN, DIFFICULTY_CONFIG.WIDE_CHANCE_MAX, difficulty);
+
+        const roll = Math.random();
+        let cumulative = 0;
+
+        cumulative += floatChance;
+        if (roll < cumulative) return "floating";
+
+        cumulative += tallChance;
+        if (roll < cumulative) return "tall";
+
+        cumulative += wideChance;
+        if (roll < cumulative) return "wide";
+
+        return "ground";
+    }
+
+    /** Find a safe position for coin that doesn't overlap obstacles */
+    private findSafeCoinPosition(): { x: number; y: number } | null {
+        const coinX = GAME_CONFIG.CANVAS_WIDTH;
+
+        // Get bounds of upcoming obstacles near spawn point
+        const nearbyObstacles = this.obstacles
+            .filter((obs) => {
+                const bounds = obs.getBounds();
+                // Check obstacles that will be near the coin's path
+                return bounds.x > GAME_CONFIG.CANVAS_WIDTH - 200;
+            })
+            .map((obs) => obs.getBounds());
+
+        // Try multiple Y positions to find a safe spot
+        const attempts = 5;
+        for (let i = 0; i < attempts; i++) {
+            // Random Y position for coin
+            const coinY = GAME_CONFIG.GROUND_HEIGHT - COIN_CONFIG.HEIGHT - 30 - Math.random() * 100;
+
+            const coinBounds: Bounds = {
+                x: coinX,
+                y: coinY,
+                width: COIN_CONFIG.WIDTH + this.COIN_OBSTACLE_BUFFER * 2,
+                height: COIN_CONFIG.HEIGHT + this.COIN_OBSTACLE_BUFFER * 2,
+            };
+
+            // Check if this position is safe
+            let isSafe = true;
+            for (const obsBounds of nearbyObstacles) {
+                if (this.boundsOverlap(coinBounds, {
+                    x: obsBounds.x - this.COIN_OBSTACLE_BUFFER,
+                    y: obsBounds.y - this.COIN_OBSTACLE_BUFFER,
+                    width: obsBounds.width + this.COIN_OBSTACLE_BUFFER * 2,
+                    height: obsBounds.height + this.COIN_OBSTACLE_BUFFER * 2,
+                })) {
+                    isSafe = false;
+                    break;
+                }
+            }
+
+            if (isSafe) {
+                return { x: coinX, y: coinY };
+            }
+        }
+
+        // No safe position found, skip this coin spawn
+        return null;
+    }
+
+    /** Check if two bounds overlap */
+    private boundsOverlap(a: Bounds, b: Bounds): boolean {
+        return (
+            a.x < b.x + b.width &&
+            a.x + a.width > b.x &&
+            a.y < b.y + b.height &&
+            a.y + a.height > b.y
+        );
+    }
+
+    /** Linear interpolation */
+    private lerp(min: number, max: number, t: number): number {
+        return min + (max - min) * t;
+    }
+
+    /** Random number in range */
+    private randomRange(min: number, max: number): number {
+        return min + Math.random() * (max - min);
     }
 
     /** Update all game entities */

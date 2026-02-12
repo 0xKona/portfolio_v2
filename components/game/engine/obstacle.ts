@@ -1,21 +1,19 @@
 import { GameObject } from "./game-object";
-import { GAME_CONFIG, OBSTACLE_CONFIG } from "./types";
+import { GAME_CONFIG, OBSTACLE_CONFIG, ObstacleType, ObstacleSpawnConfig } from "./types";
 
 /**
  * Obstacle class
  * Represents hazards the player must avoid
+ * Supports varied sizes and types (ground, floating, tall, wide)
  */
 export class Obstacle extends GameObject {
     private passed: boolean = false;
     private readonly pointValue: number = 10;
+    private readonly obstacleType: ObstacleType;
 
-    constructor(x: number = GAME_CONFIG.CANVAS_WIDTH) {
-        super(
-            x,
-            GAME_CONFIG.GROUND_HEIGHT - OBSTACLE_CONFIG.HEIGHT,
-            OBSTACLE_CONFIG.WIDTH,
-            OBSTACLE_CONFIG.HEIGHT
-        );
+    constructor(config: ObstacleSpawnConfig, x: number = GAME_CONFIG.CANVAS_WIDTH) {
+        super(x, config.y, config.width, config.height);
+        this.obstacleType = config.type;
     }
 
     /** Move obstacle left based on game speed */
@@ -28,10 +26,29 @@ export class Obstacle extends GameObject {
         }
     }
 
-    /** Render obstacle to canvas */
+    /** Render obstacle to canvas with pixel-style appearance */
     render(ctx: CanvasRenderingContext2D): void {
+        // Main body
         ctx.fillStyle = OBSTACLE_CONFIG.COLOR;
         ctx.fillRect(this.x, this.y, this.width, this.height);
+
+        // Darker border for depth
+        ctx.strokeStyle = OBSTACLE_CONFIG.COLOR_DARK;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(this.x, this.y, this.width, this.height);
+
+        // Inner detail lines for texture
+        ctx.strokeStyle = OBSTACLE_CONFIG.COLOR_DARK;
+        ctx.lineWidth = 1;
+
+        // Horizontal lines
+        const lineSpacing = 12;
+        for (let i = lineSpacing; i < this.height; i += lineSpacing) {
+            ctx.beginPath();
+            ctx.moveTo(this.x + 2, this.y + i);
+            ctx.lineTo(this.x + this.width - 2, this.y + i);
+            ctx.stroke();
+        }
     }
 
     /** Check if player has passed this obstacle (for scoring) */
@@ -46,5 +63,10 @@ export class Obstacle extends GameObject {
     /** Check if obstacle has been passed */
     hasPassed(): boolean {
         return this.passed;
+    }
+
+    /** Get the obstacle type */
+    getType(): ObstacleType {
+        return this.obstacleType;
     }
 }
