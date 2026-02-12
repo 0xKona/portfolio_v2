@@ -1,5 +1,6 @@
 "use client";
 import { GameModal } from "@/components/game/game-modal";
+import { GameTrigger } from "@/components/game/game-trigger";
 import { TerminalButton } from "@/components/ui/terminal-button";
 import { SOCIAL_LINKS } from "@/lib/constants/social-links";
 import { useState } from "react";
@@ -54,21 +55,8 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Easter egg button */}
-        <div className="pt-8 border-t border-neutral-800">
-          <TerminalButton
-            variant="ghost"
-            prefix=">"
-            onClick={() => setIsGameOpen(true)}
-            className="text-neutral-600 hover:text-cyan-400"
-          >
-            bored?
-          </TerminalButton>
-        </div>
+        <GameTrigger variant="ghost" />
       </div>
-
-      {/* Game modal */}
-      <GameModal isOpen={isGameOpen} onClose={() => setIsGameOpen(false)} />
     </main>
   );
 }
