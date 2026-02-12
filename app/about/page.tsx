@@ -1,10 +1,13 @@
 "use client";
 import { GameModal } from "@/components/game/game-modal";
 import { TerminalButton } from "@/components/ui/terminal-button";
+import { SOCIAL_LINKS } from "@/lib/constants/social-links";
 import { useState } from "react";
 
 export default function AboutPage() {
   const [isGameOpen, setIsGameOpen] = useState(false);
+
+  const { github, linkedIn } = SOCIAL_LINKS;
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4">
@@ -26,34 +29,25 @@ export default function AboutPage() {
 
             <div className="space-y-2 pl-4 border-l-2 border-neutral-700">
               <p>
-                <span className="text-cyan-400">EMAIL:</span>{" "}
-                <a
-                  href="mailto:contact@example.com"
-                  className="text-neutral-400 hover:text-green-400 transition-colors underline"
-                >
-                  contact@example.com
-                </a>
-              </p>
-              <p>
                 <span className="text-cyan-400">GITHUB:</span>{" "}
                 <a
-                  href="https://github.com"
+                  href={github.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-neutral-400 hover:text-green-400 transition-colors underline"
                 >
-                  github.com/username
+                  {github.url}
                 </a>
               </p>
               <p>
                 <span className="text-cyan-400">LINKEDIN:</span>{" "}
                 <a
-                  href="https://linkedin.com"
+                  href={linkedIn.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-neutral-400 hover:text-green-400 transition-colors underline"
                 >
-                  linkedin.com/in/username
+                  {linkedIn.url}
                 </a>
               </p>
             </div>
