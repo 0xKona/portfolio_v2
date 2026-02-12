@@ -2,7 +2,7 @@ import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { storage } from './storage/resource';
-import { Stack, Tags } from 'aws-cdk-lib';
+import { Stack, Tags, CfnOutput } from 'aws-cdk-lib';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -12,6 +12,10 @@ const backend = defineBackend({
   data,
   storage
 });
+
+// Tag the root stack
+const rootStack = backend.stack;
+Tags.of(rootStack).add('Application', 'Portfolio');
 
 function applyProjectTags(stack: Stack, component: string) {
   const environment = process.env.AWS_BRANCH || process.env.NODE_ENV || 'sandbox';
@@ -64,7 +68,14 @@ Object.entries(tables).forEach(([key, table]) => {
   }
 });
 
-// Apply tags to auth stack
+// Apply tags to all stacks
 applyProjectTags(authStack, 'Auth');
 applyProjectTags(dataStack, 'Data');
 applyProjectTags(storageStack, 'Storage');
+
+// Output stack ARN for Application Manager association
+new CfnOutput(rootStack, 'RootStackArn', {
+  value: rootStack.stackId,
+  description: 'Root stack ARN for AWS Application Manager',
+  exportName: `${rootStack.stackName}-arn`
+});
