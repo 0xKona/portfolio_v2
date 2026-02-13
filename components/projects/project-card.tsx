@@ -1,43 +1,15 @@
-/**
- * ProjectCard — Reusable card component for displaying a project summary.
- * Used in both the manager dashboard and the public-facing projects listing.
- * Shows project name, status, description, and key metadata.
- */
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import { getUrl } from "aws-amplify/storage";
 import type { Project, ProjectImage } from "@/types/data-types";
+import { renderIcon } from "@/lib/utils/get-icon";
+import { SkillIconName } from "@/lib/constants/skill-icons";
+import { useResolvedImageUrl } from "@/hooks/use-resolved-image-url";
 
 interface ProjectCardProps {
-    /** The project data object to display */
     project: Project;
-    /** Click handler — used to open editor in manager, or navigate on public site */
     onClick?: () => void;
-    /** Additional CSS classes */
     className?: string;
-}
-
-/**
- * Resolves an S3 storage path to a signed URL for display.
- * Returns null if the path is already a full URL or resolution fails.
- */
-function useResolvedImageUrl(path?: string | null): string | null {
-    // Initialise with the path if it's already a full URL, avoiding an effect-triggered setState
-    const [url, setUrl] = useState<string | null>(
-        path?.startsWith("http") ? path : null,
-    );
-
-    useEffect(() => {
-        if (!path || path.startsWith("http")) return;
-        // Resolve S3 storage path to a signed URL
-        getUrl({ path })
-            .then((result) => setUrl(result.url.toString()))
-            .catch(() => setUrl(null));
-    }, [path]);
-
-    return url;
 }
 
 export function ProjectCard({
@@ -115,8 +87,9 @@ export function ProjectCard({
                         .map((skill) => (
                             <span
                                 key={skill}
-                                className="text-xs text-neutral-500 border border-neutral-700 px-1.5 py-0.5 font-mono"
+                                className="text-xs flex flex-nowrap items-center gap-1 text-neutral-500 border border-neutral-700 px-1.5 py-0.5 font-mono"
                             >
+                                {renderIcon(skill as SkillIconName)}
                                 {skill}
                             </span>
                         ))}

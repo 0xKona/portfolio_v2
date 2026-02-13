@@ -2,17 +2,6 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 // Database schema
 const schema = a.schema({
-  // Skill Model
-  PortfolioSkillV2: a.model({
-    name: a.string().required(),
-    displayName: a.string().required(),
-    lucideIconName: a.string(),
-    type: a.enum(['language', 'framework', 'platform']),
-  }).authorization((allow) => [
-      allow.guest().to(["read"]),
-      allow.authenticated().to(["read", "create", "update", "delete"])
-  ]),
-  
   // Custom Type for a image
   PortfolioProjectImageV2: a.customType({
     url: a.string().required(),

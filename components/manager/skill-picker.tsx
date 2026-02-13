@@ -1,22 +1,18 @@
-/**
- * SkillPicker — Multi-select dropdown for choosing skills from the database.
- * Fetches available skills via useSkills and displays them as toggleable options.
- * Selected skills are shown as removable tags above the dropdown.
- */
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useSkills } from "@/hooks/use-skills";
+import {
+    SKILL_ICON_NAMES,
+    type SkillIconName,
+} from "@/lib/constants/skill-icons";
+import { renderIcon } from "@/lib/utils/get-icon";
 
 interface SkillPickerProps {
-    /** Currently selected skill names */
     selected: string[];
-    /** Callback when selection changes */
     onChange: (selected: string[]) => void;
 }
 
 export function SkillPicker({ selected, onChange }: SkillPickerProps) {
-    const { skills, isLoading } = useSkills();
     const [isOpen, setIsOpen] = useState(false);
     const [filter, setFilter] = useState("");
     const containerRef = useRef<HTMLDivElement>(null);
@@ -51,17 +47,9 @@ export function SkillPicker({ selected, onChange }: SkillPickerProps) {
     };
 
     // Filter skills by the search input
-    const filteredSkills = skills.filter(
-        (skill) =>
-            skill.displayName.toLowerCase().includes(filter.toLowerCase()) ||
-            skill.name.toLowerCase().includes(filter.toLowerCase()),
+    const filteredSkills = SKILL_ICON_NAMES.filter((name) =>
+        name.toLowerCase().includes(filter.toLowerCase()),
     );
-
-    // Resolve display name for a selected skill name
-    const getDisplayName = (name: string): string => {
-        const skill = skills.find((s) => s.name === name);
-        return skill?.displayName ?? name;
-    };
 
     return (
         <div ref={containerRef}>
@@ -77,7 +65,8 @@ export function SkillPicker({ selected, onChange }: SkillPickerProps) {
                             key={name}
                             className="inline-flex items-center gap-1 text-xs text-neutral-300 border border-neutral-700 px-2 py-0.5 font-mono"
                         >
-                            {getDisplayName(name)}
+                            {renderIcon(name as SkillIconName)}
+                            {name}
                             <button
                                 type="button"
                                 onClick={() => removeSkill(name)}
@@ -101,9 +90,7 @@ export function SkillPicker({ selected, onChange }: SkillPickerProps) {
                     transition-colors cursor-pointer
                 "
             >
-                {isLoading
-                    ? "loading skills..."
-                    : `select skills (${selected.length} selected)`}
+                select skills ({selected.length} selected)
             </button>
 
             {/* Dropdown list */}
@@ -132,27 +119,25 @@ export function SkillPicker({ selected, onChange }: SkillPickerProps) {
                             no skills found
                         </div>
                     ) : (
-                        filteredSkills.map((skill) => {
-                            const isSelected = selected.includes(skill.name);
+                        filteredSkills.map((name) => {
+                            const isSelected = selected.includes(name);
                             return (
                                 <button
-                                    key={skill.id}
+                                    key={name}
                                     type="button"
-                                    onClick={() => toggleSkill(skill.name)}
+                                    onClick={() => toggleSkill(name)}
                                     className={`
                                         w-full text-left px-3 py-1.5 font-mono text-xs
-                                        flex items-center justify-between
+                                        flex items-center gap-2
                                         hover:bg-neutral-900 transition-colors cursor-pointer
                                         ${isSelected ? "text-green-400" : "text-neutral-400"}
                                     `}
                                 >
-                                    <span>
-                                        {isSelected ? "[×]" : "[ ]"}{" "}
-                                        {skill.displayName}
+                                    <span className="w-6 shrink-0 whitespace-nowrap">
+                                        {isSelected ? "[×]" : "[ ]"}
                                     </span>
-                                    <span className="text-neutral-600">
-                                        {skill.type}
-                                    </span>
+                                    {renderIcon(name)}
+                                    <span>{name}</span>
                                 </button>
                             );
                         })
