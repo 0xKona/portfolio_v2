@@ -4,6 +4,8 @@ import { data } from './data/resource';
 import { storage } from './storage/resource';
 import { Stack, Tags, CfnOutput } from 'aws-cdk-lib';
 
+const APPLICATION_TAG = 'Portfolio-v2'
+
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
  */
@@ -15,13 +17,13 @@ const backend = defineBackend({
 
 // Tag the root stack
 const rootStack = backend.stack;
-Tags.of(rootStack).add('Application', 'Portfolio');
+Tags.of(rootStack).add('Application', APPLICATION_TAG);
 
 function applyProjectTags(stack: Stack, component: string) {
   const environment = process.env.AWS_BRANCH || process.env.NODE_ENV || 'sandbox';
   const branch = process.env.AWS_BRANCH || 'sandbox';
   
-  Tags.of(stack).add('Application', 'Portfolio');
+  Tags.of(stack).add('Application', APPLICATION_TAG);
   Tags.of(stack).add('Component', component);
   Tags.of(stack).add('Environment', environment);
   Tags.of(stack).add('Branch', branch);
