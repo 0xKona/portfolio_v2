@@ -46,7 +46,8 @@ export default function Signin() {
                 return;
             }
 
-            // Redirect to the page they were trying to access, or home
+            // Refresh to sync auth cookies for SSR, then redirect
+            router.refresh();
             const redirect = searchParams.get("redirect") || "/";
             router.push(redirect);
         } catch {
@@ -55,7 +56,8 @@ export default function Signin() {
     };
 
     const handlePasswordComplete = () => {
-        // After password is set, redirect to intended page
+        // Refresh to sync auth cookies for SSR, then redirect
+        router.refresh();
         const redirect = searchParams.get("redirect") || "/";
         router.push(redirect);
     };
