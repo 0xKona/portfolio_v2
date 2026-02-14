@@ -38,12 +38,6 @@ export default function ManagerRoot() {
                 </div>
                 <div className="flex gap-3">
                     <TerminalButton
-                        variant="secondary"
-                        onClick={() => router.push("/manager/skills")}
-                    >
-                        &gt; skills
-                    </TerminalButton>
-                    <TerminalButton
                         variant="primary"
                         onClick={handleCreate}
                         prefix="+"

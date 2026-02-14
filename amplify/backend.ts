@@ -49,6 +49,11 @@ cfnUserPool.adminCreateUserConfig = {
   allowAdminCreateUserOnly: true
 }
 
+// Enable unauthenticated access for public data
+// Required for allow.guest() in data schema to work
+const { cfnIdentityPool } = backend.auth.resources.cfnResources;
+cfnIdentityPool.allowUnauthenticatedIdentities = true;
+
 // Customize User Pool Client name
 const { cfnUserPoolClient } = backend.auth.resources.cfnResources;
 cfnUserPoolClient.clientName = `portfolio-v2-client-${environment}-${accountIdSuffix}`;
@@ -63,9 +68,7 @@ const tables = cfnResources.cfnTables;
 
 Object.entries(tables).forEach(([key, table]) => {
   const modelName = key.split('-')[0]; // Extract model name from generated key
-  if (modelName === 'PortfolioSkillV2') {
-    table.tableName = `portfolio-v2-skill-${environment}-${accountIdSuffix}`;
-  } else if (modelName === 'PortfolioProjectV2') {
+  if (modelName === 'PortfolioProjectV2') {
     table.tableName = `portfolio-v2-project-${environment}-${accountIdSuffix}`;
   }
 });

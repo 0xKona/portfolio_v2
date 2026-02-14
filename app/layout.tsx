@@ -16,8 +16,8 @@ export const metadata: Metadata = {
     description: "Software developer portfolio",
 };
 
-// Configure Amplify using the generated outputs file
-Amplify.configure(outputs);
+// Configure Amplify with SSR support for cookie-based auth
+Amplify.configure(outputs, { ssr: true });
 
 /**
  * RootLayout — wraps every page with the monospace font, black background,

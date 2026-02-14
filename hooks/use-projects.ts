@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { fetchAuthSession } from "aws-amplify/auth";
 import { client } from "@/lib/amplify-client";
 import type { Schema } from "@/amplify/data/resource";
 
@@ -23,18 +24,32 @@ interface UseProjectsReturn {
 }
 
 /**
- * @param authMode - Amplify auth mode. Use 'userPool' for authenticated
- *   manager pages, 'identityPool' for public guest-readable pages.
+ * Hook for managing projects with automatic auth mode detection.
+ * Uses userPool for authenticated users, identityPool for guests.
  */
-export function useProjects(authMode: 'userPool' | 'identityPool' = 'userPool'): UseProjectsReturn {
+export function useProjects(forceAuthMode?: 'userPool' | 'identityPool'): UseProjectsReturn {
     const [projects, setProjects] = useState<AmplifyProject[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    const getAuthMode = async (): Promise<'userPool' | 'identityPool'> => {
+        // If auth mode is forced, use it
+        if (forceAuthMode) return forceAuthMode;
+        
+        // Auto-detect: check if user is authenticated
+        try {
+            const session = await fetchAuthSession();
+            return session.tokens ? 'userPool' : 'identityPool';
+        } catch {
+            return 'identityPool';
+        }
+    };
 
     const refresh = useCallback(async () => {
         setIsLoading(true);
         setError(null);
         try {
+            const authMode = await getAuthMode();
             const { data, errors } =
                 await client.models.PortfolioProjectV2.list({ authMode });
             if (errors?.length) {
@@ -49,7 +64,8 @@ export function useProjects(authMode: 'userPool' | 'identityPool' = 'userPool'):
         } finally {
             setIsLoading(false);
         }
-    }, [authMode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [forceAuthMode]);
 
     useEffect(() => {
         refresh();
@@ -59,6 +75,7 @@ export function useProjects(authMode: 'userPool' | 'identityPool' = 'userPool'):
         input: Omit<AmplifyProject, "id" | "createdAt" | "updatedAt">
     ): Promise<AmplifyProject | null> => {
         try {
+            const authMode = await getAuthMode();
             const { data, errors } =
                 await client.models.PortfolioProjectV2.create(input, { authMode });
             if (errors?.length) {
@@ -83,6 +100,7 @@ export function useProjects(authMode: 'userPool' | 'identityPool' = 'userPool'):
         input: Partial<Omit<AmplifyProject, "id" | "createdAt" | "updatedAt">>
     ): Promise<AmplifyProject | null> => {
         try {
+            const authMode = await getAuthMode();
             const { data, errors } =
                 await client.models.PortfolioProjectV2.update({
                     id,
@@ -106,6 +124,7 @@ export function useProjects(authMode: 'userPool' | 'identityPool' = 'userPool'):
 
     const deleteProject = async (id: string): Promise<boolean> => {
         try {
+            const authMode = await getAuthMode();
             const { errors } =
                 await client.models.PortfolioProjectV2.delete({ id }, { authMode });
             if (errors?.length) {
