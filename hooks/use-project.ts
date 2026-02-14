@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { fetchAuthSession } from "aws-amplify/auth";
 import { client } from "@/lib/amplify-client";
 import type { Schema } from "@/amplify/data/resource";
 
@@ -13,10 +14,10 @@ interface UseProjectReturn {
 }
 
 /**
- * @param authMode - Amplify auth mode. Use 'userPool' for authenticated
- *   manager pages, 'identityPool' for public guest-readable pages.
+ * Hook for fetching a single project with automatic auth mode detection.
+ * Uses userPool for authenticated users, identityPool for guests.
  */
-export function useProject(id: string | null, authMode: 'userPool' | 'identityPool' = 'userPool'): UseProjectReturn {
+export function useProject(id: string | null, forceAuthMode?: 'userPool' | 'identityPool'): UseProjectReturn {
     const [project, setProject] = useState<AmplifyProject | null>(null);
     const [isLoading, setIsLoading] = useState(!!id);
     const [error, setError] = useState<string | null>(null);
@@ -34,6 +35,19 @@ export function useProject(id: string | null, authMode: 'userPool' | 'identityPo
             setIsLoading(true);
             setError(null);
             try {
+                // Auto-detect auth mode if not forced
+                let authMode: 'userPool' | 'identityPool' = 'identityPool';
+                if (forceAuthMode) {
+                    authMode = forceAuthMode;
+                } else {
+                    try {
+                        const session = await fetchAuthSession();
+                        authMode = session.tokens ? 'userPool' : 'identityPool';
+                    } catch {
+                        authMode = 'identityPool';
+                    }
+                }
+
                 const { data, errors } =
                     await client.models.PortfolioProjectV2.get({ id }, { authMode });
                 if (cancelled) return;
@@ -58,7 +72,7 @@ export function useProject(id: string | null, authMode: 'userPool' | 'identityPo
         return () => {
             cancelled = true;
         };
-    }, [id, authMode]);
+    }, [forceAuthMode, id]);
 
     return { project, isLoading, error };
 }
