@@ -49,6 +49,11 @@ cfnUserPool.adminCreateUserConfig = {
   allowAdminCreateUserOnly: true
 }
 
+// Enable unauthenticated access for public data
+// Required for allow.guest() in data schema to work
+const { cfnIdentityPool } = backend.auth.resources.cfnResources;
+cfnIdentityPool.allowUnauthenticatedIdentities = true;
+
 // Customize User Pool Client name
 const { cfnUserPoolClient } = backend.auth.resources.cfnResources;
 cfnUserPoolClient.clientName = `portfolio-v2-client-${environment}-${accountIdSuffix}`;
