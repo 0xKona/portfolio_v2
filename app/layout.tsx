@@ -12,8 +12,57 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Connor Robinson — Portfolio",
-    description: "Software developer portfolio",
+    title: {
+        default: "Connor Robinson — Software Developer",
+        template: "%s | Connor Robinson",
+    },
+    description:
+        "Portfolio of Connor Robinson, a software developer specializing in full-stack development, cloud architecture, and modern web applications.",
+    keywords: [
+        "Connor Robinson",
+        "software developer",
+        "portfolio",
+        "full-stack developer",
+        "web development",
+        "cloud architecture",
+    ],
+    authors: [{ name: "Connor Robinson" }],
+    creator: "Connor Robinson",
+    publisher: "Connor Robinson",
+    metadataBase: new URL("https://konarobinson.com"),
+    alternates: {
+        canonical: "/",
+    },
+    openGraph: {
+        type: "website",
+        locale: "en_GB",
+        url: "https://konarobinson.com",
+        siteName: "Connor Robinson — Portfolio",
+        title: "Connor Robinson — Software Developer",
+        description:
+            "Portfolio of Connor Robinson, a software developer specializing in full-stack development, cloud architecture, and modern web applications.",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Connor Robinson — Software Developer",
+        description:
+            "Portfolio of Connor Robinson, a software developer specializing in full-stack development, cloud architecture, and modern web applications.",
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+        },
+    },
+    verification: {
+        // Add your Google Search Console verification code here after signing up
+        // google: 'your-verification-code-here',
+    },
 };
 
 // Configure Amplify with SSR support for cookie-based auth
