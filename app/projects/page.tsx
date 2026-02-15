@@ -1,5 +1,17 @@
 import { AsciiTitle } from "@/components/ui/ascii-title";
 import { ProjectGrid } from "@/components/projects/project-grid";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Projects",
+    description:
+        "Explore my portfolio of software development projects, including full-stack applications, cloud architecture, and web development work.",
+    openGraph: {
+        title: "Projects | Connor Robinson",
+        description:
+            "Explore my portfolio of software development projects, including full-stack applications, cloud architecture, and web development work.",
+    },
+};
 
 /** Projects — Public-facing projects listing page */
 export default function ProjectsPage() {
