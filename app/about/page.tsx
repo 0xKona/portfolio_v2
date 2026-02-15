@@ -1,4 +1,5 @@
-import { AboutContent } from "@/components/landing/about-content";
+import { AboutMe } from "@/components/landing/about-me";
+import { AboutContact } from "@/components/landing/about-contact";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,5 +14,10 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
-    return <AboutContent />;
+    return (
+        <main className="min-h-screen">
+            <AboutMe />
+            <AboutContact />
+        </main>
+    );
 }
