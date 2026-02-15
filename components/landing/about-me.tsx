@@ -41,7 +41,20 @@ export function AboutMe() {
 
             {/* About content */}
             <div className="space-y-8 relative">
-                <h1 className="font-mono text-3xl text-green-400">ABOUT ME</h1>
+                <div className="relative">
+                    <h1 className="font-mono text-3xl text-green-400">
+                        ABOUT ME
+                    </h1>
+                    <div className="absolute bottom-[-5] left-40 pointer-events-none -mb-2">
+                        <Image
+                            src="/laptop_edge.gif"
+                            alt="Chibi character sitting on laptop edge"
+                            width={72}
+                            height={72}
+                            className="h-24 w-auto opacity-90"
+                        />
+                    </div>
+                </div>
 
                 <div className="space-y-6 text-neutral-300 font-mono text-sm">
                     {/* Bio section */}
@@ -112,17 +125,6 @@ export function AboutMe() {
                                 ),
                             )}
                         </div>
-                    </div>
-
-                    {/* Laptop edge animation */}
-                    <div className="absolute bottom-4 right-4 pointer-events-none">
-                        <Image
-                            src="/laptop_edge.gif"
-                            alt="Chibi character sitting on laptop edge"
-                            width={128}
-                            height={128}
-                            className="h-32 w-auto -mb-8 opacity-90"
-                        />
                     </div>
                 </div>
             </div>

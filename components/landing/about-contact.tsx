@@ -50,7 +50,10 @@ export function AboutContact() {
                     </div>
                 </div>
 
-                <GameTrigger variant="ghost" />
+                <GameTrigger
+                    label="That's it! Might as well play a mini-game"
+                    variant="ghost"
+                />
             </div>
         </section>
     );
