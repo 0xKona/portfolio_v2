@@ -17,16 +17,21 @@ export function AboutMe() {
                     <div className="space-y-4">
                         <p className="text-neutral-400">
                             <span className="text-cyan-400">{">"}</span>{" "}
-                            [Placeholder: Brief introduction about who you are]
+                            I&apos;m Connor, a 3rd year degree apprentice in the
+                            UK specializing in TypeScript and AWS cloud
+                            development.
                         </p>
                         <p className="text-neutral-400">
-                            <span className="text-cyan-400">{">"}</span>{" "}
-                            [Placeholder: Your background, experience, and
-                            expertise]
+                            <span className="text-cyan-400">{">"}</span> I build
+                            scalable React web applications and APIs on AWS,
+                            with additional experience in React Native mobile
+                            development.
                         </p>
                         <p className="text-neutral-400">
-                            <span className="text-cyan-400">{">"}</span>{" "}
-                            [Placeholder: What drives you or your interests]
+                            <span className="text-cyan-400">{">"}</span> In my
+                            spare time, I&apos;m always tinkering — whether
+                            that&apos;s side projects or experimenting with new
+                            technologies.
                         </p>
                     </div>
 
