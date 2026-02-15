@@ -6,7 +6,7 @@ export function AboutContent() {
     const { github, linkedIn } = SOCIAL_LINKS;
 
     return (
-        <main className="min-h-screen flex flex-col items-center justify-center px-4">
+        <main className="flex flex-col items-center justify-center px-4 py-20">
             <div className="max-w-2xl w-full space-y-8">
                 {/* Terminal header */}
                 <div className="font-mono text-neutral-500 text-sm">

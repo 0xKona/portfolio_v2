@@ -80,7 +80,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`${jetbrainsMono.variable} font-mono bg-black text-neutral-300 antialiased`}
+                className={`${jetbrainsMono.variable} min-h-dvh font-mono bg-black text-neutral-300 antialiased`}
             >
                 <Auth>
                     <MainNavigationBar />
