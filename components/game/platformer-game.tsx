@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
 import { GameEngine, GAME_CONFIG, PLAYER_CONFIG, GameState } from "./engine";
+import GameOver from "./game-over";
 
 interface PlatformerGameProps {
     /** Callback when game ends with final score */
@@ -93,15 +94,14 @@ export function PlatformerGame({
     }, []);
 
     /** Handle keyboard input */
+    // ****** HERERERERERE *******
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.code === "Space" || e.code === "ArrowUp") {
                 e.preventDefault();
-                if (gameState.gameOver) {
-                    startGame();
-                } else if (gameState.isPlaying) {
+                if (gameState.isPlaying) {
                     handleJump();
-                } else {
+                } else if (!gameState.isPlaying && !gameState.gameOver) {
                     startGame();
                 }
             }
@@ -181,30 +181,7 @@ export function PlatformerGame({
                 )}
 
                 {gameState.gameOver && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/80">
-                        <div className="text-center font-mono">
-                            <p className="text-red-400 text-lg mb-2">
-                                GAME OVER
-                            </p>
-                            <div className="text-neutral-500 text-xs mb-2 space-y-1">
-                                <p>Base Score: {gameState.score}</p>
-                                <p>
-                                    Coins: {gameState.coins}{" "}
-                                    <span className="text-green-400">
-                                        (
-                                        {(1 + gameState.coins * 0.1).toFixed(1)}
-                                        x multiplier)
-                                    </span>
-                                </p>
-                            </div>
-                            <p className="text-green-400 text-lg mb-4">
-                                Final Score: {gameState.finalScore}
-                            </p>
-                            <p className="text-neutral-600 text-xs">
-                                Press SPACE or click to restart
-                            </p>
-                        </div>
-                    </div>
+                    <GameOver gameState={gameState} startGame={startGame} />
                 )}
             </div>
 
