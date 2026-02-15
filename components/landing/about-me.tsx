@@ -1,15 +1,46 @@
 "use client";
 
+import Image from "next/image";
+import { renderIcon } from "@/lib/utils/get-icon";
+import type { SkillIconName } from "@/lib/constants/skill-icons";
+
 export function AboutMe() {
+    interface MySkills {
+        [key: string]: string[];
+    }
+
+    const mySkills: MySkills = {
+        frontend: [
+            "react",
+            "nextjs",
+            "react-native",
+            "typescript",
+            "javascript",
+            "tailwindcss",
+            "css",
+        ],
+        backend: [
+            "nodejs",
+            "aws-amplify",
+            "mysql",
+            "sqlite",
+            "graphql",
+            "aws-dynamodb",
+        ],
+        cloud: ["aws", "vercel", "aws-lambda", "aws-step-functions", "aws-cdk"],
+        tools: ["docker", "git", "gitlab", "github"],
+        additional: ["c++", "golang", "java", "python", "php"],
+    };
+
     return (
-        <section className="w-full max-w-4xl mx-auto px-4 py-20">
+        <section className="w-full max-w-4xl mx-auto px-4 py-20 relative">
             {/* Terminal header */}
             <div className="font-mono text-neutral-500 text-sm mb-6">
                 <span className="text-green-400">$</span> cat about.txt
             </div>
 
             {/* About content */}
-            <div className="space-y-8">
+            <div className="space-y-8 relative">
                 <h1 className="font-mono text-3xl text-green-400">ABOUT ME</h1>
 
                 <div className="space-y-6 text-neutral-300 font-mono text-sm">
@@ -40,66 +71,58 @@ export function AboutMe() {
                         <h2 className="text-lg text-green-400">
                             <span className="text-neutral-600">#</span> SKILLS
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4 border-l-2 border-neutral-700">
-                            <div>
-                                <p className="text-cyan-400 mb-2">FRONTEND:</p>
-                                <p className="text-neutral-400">
-                                    [Placeholder: Your frontend technologies]
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-cyan-400 mb-2">BACKEND:</p>
-                                <p className="text-neutral-400">
-                                    [Placeholder: Your backend technologies]
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-cyan-400 mb-2">CLOUD:</p>
-                                <p className="text-neutral-400">
-                                    [Placeholder: Your cloud platforms]
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-cyan-400 mb-2">TOOLS:</p>
-                                <p className="text-neutral-400">
-                                    [Placeholder: Your development tools]
-                                </p>
-                            </div>
+                        <div className="space-y-4 pl-4 border-l-2 border-neutral-700">
+                            {Object.entries(mySkills).map(
+                                ([category, skills]) => (
+                                    <div key={category}>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <p className="text-cyan-400 uppercase text-xs tracking-wide">
+                                                {category}
+                                            </p>
+                                            {category === "additional" && (
+                                                <p className="text-neutral-500 text-xs">
+                                                    I don&apos;t use these
+                                                    regularly but have some
+                                                    experience
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-wrap gap-2.5">
+                                            {skills.map((skill) => (
+                                                <div
+                                                    key={skill}
+                                                    className="flex items-center gap-2 px-3 py-2 border border-neutral-700 rounded-none bg-neutral-900 hover:bg-neutral-800 hover:border-cyan-400 transition-colors"
+                                                >
+                                                    <div className="shrink-0 text-cyan-400 w-4 h-4">
+                                                        {renderIcon(
+                                                            skill as SkillIconName,
+                                                            "w-4 h-4",
+                                                        )}
+                                                    </div>
+                                                    <span className="text-neutral-300 text-xs capitalize">
+                                                        {skill.replace(
+                                                            /\./g,
+                                                            "",
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ),
+                            )}
                         </div>
                     </div>
 
-                    {/* Experience section */}
-                    <div className="space-y-4 pt-4 border-t border-neutral-800">
-                        <h2 className="text-lg text-green-400">
-                            <span className="text-neutral-600">#</span>{" "}
-                            EXPERIENCE
-                        </h2>
-                        <div className="space-y-4 pl-4 border-l-2 border-neutral-700">
-                            <div>
-                                <p className="text-cyan-400">
-                                    [Placeholder: Job Title]
-                                </p>
-                                <p className="text-neutral-500 text-xs">
-                                    [Company Name] • [Date Range]
-                                </p>
-                                <p className="text-neutral-400 mt-2">
-                                    [Placeholder: Brief description of role and
-                                    achievements]
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-cyan-400">
-                                    [Placeholder: Job Title]
-                                </p>
-                                <p className="text-neutral-500 text-xs">
-                                    [Company Name] • [Date Range]
-                                </p>
-                                <p className="text-neutral-400 mt-2">
-                                    [Placeholder: Brief description of role and
-                                    achievements]
-                                </p>
-                            </div>
-                        </div>
+                    {/* Laptop edge animation */}
+                    <div className="absolute bottom-4 right-4 pointer-events-none">
+                        <Image
+                            src="/laptop_edge.gif"
+                            alt="Chibi character sitting on laptop edge"
+                            width={128}
+                            height={128}
+                            className="h-32 w-auto -mb-8 opacity-90"
+                        />
                     </div>
                 </div>
             </div>
