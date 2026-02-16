@@ -45,7 +45,7 @@ export function GameModal({ isOpen, onClose }: GameModalProps) {
         >
             {/* Modal content - fullscreen on mobile, contained on desktop */}
             <div
-                className="relative bg-black w-full h-full md:h-auto md:max-w-4xl md:border md:border-green-400 md:mx-4 flex flex-col"
+                className="relative bg-black w-full h-full md:h-auto md:min-h-[70%] md:max-w-4xl md:border md:border-green-400 md:mx-4 flex flex-col"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Terminal-style header */}

@@ -14,14 +14,31 @@ export default function GameOver({ gameState, resetToMenu }: GameOverProps) {
     const client = generateClient<Schema>();
 
     const [topScores, setTopScores] = useState<GameScore[]>([]);
+    const [isLoadingScores, setIsLoadingScores] = useState(true);
     const [playerName, setPlayerName] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [hasSubmitted, setHasSubmitted] = useState(false);
+
+    /** Format relative time (e.g., "2d ago", "3h ago") */
+    const formatRelativeTime = (dateString: string): string => {
+        const now = new Date();
+        const date = new Date(dateString);
+        const diffMs = now.getTime() - date.getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        if (diffMins < 1) return "just now";
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        return `${diffDays}d ago`;
+    };
 
     /** Fetch top 5 scores from database */
     const fetchTopScores = useCallback(async () => {
         /* This is inefficinet but fine for this site, if for some reason
         10's of 1000's of players start playing, move to full graphql with indexing */
+        setIsLoadingScores(true);
         try {
             const response = await client.models.GameScore.list({
                 filter: { game: { eq: "platformer" } },
@@ -32,6 +49,8 @@ export default function GameOver({ gameState, resetToMenu }: GameOverProps) {
             setTopScores(sorted);
         } catch (error) {
             console.error("Failed to fetch top scores:", error);
+        } finally {
+            setIsLoadingScores(false);
         }
     }, [client]);
 
@@ -82,17 +101,8 @@ export default function GameOver({ gameState, resetToMenu }: GameOverProps) {
 
             {/* Score Summary */}
             <div className="text-center mb-2 md:mb-3">
-                <div className="flex gap-2 text-neutral-500 text-[10px] md:text-xs mb-0.5 leading-tight">
-                    <p>Base: {gameState.score}</p>
-                    <p>
-                        Coins: {gameState.coins}{" "}
-                        <span className="text-green-400">
-                            ({(1 + gameState.coins * 0.1).toFixed(1)}x)
-                        </span>
-                    </p>
-                </div>
                 <p className="text-green-400 text-lg md:text-xl leading-tight">
-                    {gameState.finalScore}
+                    Total Score: {gameState.finalScore}
                 </p>
             </div>
 
@@ -102,20 +112,40 @@ export default function GameOver({ gameState, resetToMenu }: GameOverProps) {
                     TOP SCORES
                 </p>
                 <div className="bg-black border border-neutral-700 p-1.5 md:p-2 max-h-24 md:max-h-32 overflow-y-auto">
-                    {topScores.length > 0 ? (
+                    {isLoadingScores ? (
+                        // Skeleton loading
+                        Array.from({ length: 5 }).map((_, index) => (
+                            <div
+                                key={`skeleton-${index}`}
+                                className="flex justify-between items-center text-[10px] md:text-xs gap-2 mb-1"
+                            >
+                                <span className="text-neutral-700 w-4">
+                                    {index + 1}.
+                                </span>
+                                <span className="flex-1 h-3 bg-neutral-800 rounded animate-pulse" />
+                                <span className="w-12 h-3 bg-neutral-800 rounded animate-pulse" />
+                                <span className="w-10 h-3 bg-neutral-800 rounded animate-pulse" />
+                            </div>
+                        ))
+                    ) : topScores.length > 0 ? (
                         topScores.map((score, index) => (
                             <div
                                 key={score.id}
-                                className="flex justify-between items-center text-[10px] md:text-xs text-neutral-300 leading-tight"
+                                className="flex justify-between items-center text-[10px] md:text-xs text-neutral-300 leading-tight mb-1 gap-2"
                             >
                                 <span className="text-neutral-500 w-4">
                                     {index + 1}.
                                 </span>
-                                <span className="flex-1 truncate px-1">
+                                <span className="flex-1 truncate">
                                     {score.playerName}
                                 </span>
-                                <span className="text-green-400">
+                                <span className="text-green-400 text-right whitespace-nowrap">
                                     {score.finalScore}
+                                </span>
+                                <span className="text-neutral-600 text-[8px] text-right whitespace-nowrap w-10">
+                                    {score.createdAt
+                                        ? formatRelativeTime(score.createdAt)
+                                        : "—"}
                                 </span>
                             </div>
                         ))
