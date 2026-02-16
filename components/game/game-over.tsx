@@ -18,16 +18,17 @@ export default function GameOver({ gameState, resetToMenu }: GameOverProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [hasSubmitted, setHasSubmitted] = useState(false);
 
-    /** Fetch top 10 scores from database */
+    /** Fetch top 5 scores from database */
     const fetchTopScores = useCallback(async () => {
+        /* This is inefficinet but fine for this site, if for some reason
+        10's of 1000's of players start playing, move to full graphql with indexing */
         try {
             const response = await client.models.GameScore.list({
                 filter: { game: { eq: "platformer" } },
-                limit: 10,
             });
-            const sorted = response.data.sort(
-                (a, b) => parseInt(b.finalScore) - parseInt(a.finalScore),
-            );
+            const sorted = response.data
+                .sort((a, b) => parseInt(b.finalScore) - parseInt(a.finalScore))
+                .slice(0, 5);
             setTopScores(sorted);
         } catch (error) {
             console.error("Failed to fetch top scores:", error);
@@ -80,8 +81,8 @@ export default function GameOver({ gameState, resetToMenu }: GameOverProps) {
             </p>
 
             {/* Score Summary */}
-            <div className="text-center mb-3 md:mb-4">
-                <div className="flex gap-2 text-neutral-500 text-[10px] md:text-xs mb-1 space-y-0.5">
+            <div className="text-center mb-2 md:mb-3">
+                <div className="flex gap-2 text-neutral-500 text-[10px] md:text-xs mb-0.5 leading-tight">
                     <p>Base: {gameState.score}</p>
                     <p>
                         Coins: {gameState.coins}{" "}
@@ -90,7 +91,7 @@ export default function GameOver({ gameState, resetToMenu }: GameOverProps) {
                         </span>
                     </p>
                 </div>
-                <p className="text-green-400 text-lg md:text-xl">
+                <p className="text-green-400 text-lg md:text-xl leading-tight">
                     {gameState.finalScore}
                 </p>
             </div>
@@ -102,7 +103,7 @@ export default function GameOver({ gameState, resetToMenu }: GameOverProps) {
                 </p>
                 <div className="bg-black border border-neutral-700 p-1.5 md:p-2 max-h-24 md:max-h-32 overflow-y-auto">
                     {topScores.length > 0 ? (
-                        topScores.slice(0, 5).map((score, index) => (
+                        topScores.map((score, index) => (
                             <div
                                 key={score.id}
                                 className="flex justify-between items-center text-[10px] md:text-xs text-neutral-300 leading-tight"
