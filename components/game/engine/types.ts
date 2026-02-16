@@ -1,11 +1,29 @@
-/** Game configuration constants */
+/** 
+ * Game configuration constants 
+ * Gameplay settings - dimensions are calculated dynamically
+ */
 export const GAME_CONFIG = {
-    CANVAS_WIDTH: 800,
-    CANVAS_HEIGHT: 300,
-    GROUND_HEIGHT: 250,
+    // Ground is 85% down from top
+    GROUND_RATIO: 0.85,
+    // Gameplay settings
     INITIAL_GAME_SPEED: 5,
     SPEED_INCREMENT: 0.0015,
     GRAVITY: 0.6,
+    // Aspect ratio constraints for responsive sizing
+    MIN_ASPECT_RATIO: 1.0,   // Square (for mobile portrait)
+    MAX_ASPECT_RATIO: 2.5,   // Wide landscape (for desktop)
+    // Minimum dimensions
+    MIN_WIDTH: 300,
+    MIN_HEIGHT: 200,
+} as const;
+
+/** UI spacing and sizing for responsive layout */
+export const UI_CONFIG = {
+    // Space reserved for score display and controls
+    UI_ELEMENTS_HEIGHT: 80,
+    // Game over panel sizing
+    GAME_OVER_MAX_WIDTH_MOBILE: 280,
+    GAME_OVER_MAX_WIDTH_DESKTOP: 320,
 } as const;
 
 /** Player-specific constants */

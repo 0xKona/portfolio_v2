@@ -1,5 +1,5 @@
 import { GameObject } from "./game-object";
-import { GAME_CONFIG, COIN_CONFIG } from "./types";
+import { COIN_CONFIG } from "./types";
 
 /**
  * Base collectible class
@@ -53,11 +53,11 @@ export abstract class Collectible extends GameObject {
 export class Coin extends Collectible {
     private animationFrame: number = 0;
 
-    constructor(x: number = GAME_CONFIG.CANVAS_WIDTH, y?: number) {
+    constructor(canvasWidth: number, groundHeight: number, y?: number) {
         // Position coin at varying heights for variety
         const coinY =
-            y ?? GAME_CONFIG.GROUND_HEIGHT - COIN_CONFIG.HEIGHT - 30 - Math.random() * 80;
-        super(x, coinY, COIN_CONFIG.WIDTH, COIN_CONFIG.HEIGHT, COIN_CONFIG.POINTS);
+            y ?? groundHeight - COIN_CONFIG.HEIGHT - 30 - Math.random() * 80;
+        super(canvasWidth, coinY, COIN_CONFIG.WIDTH, COIN_CONFIG.HEIGHT, COIN_CONFIG.POINTS);
     }
 
     update(gameSpeed: number): void {

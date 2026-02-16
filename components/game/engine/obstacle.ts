@@ -1,5 +1,5 @@
 import { GameObject } from "./game-object";
-import { GAME_CONFIG, OBSTACLE_CONFIG, ObstacleType, ObstacleSpawnConfig } from "./types";
+import { OBSTACLE_CONFIG, ObstacleType, ObstacleSpawnConfig } from "./types";
 
 /**
  * Obstacle class
@@ -11,8 +11,8 @@ export class Obstacle extends GameObject {
     private readonly pointValue: number = 10;
     private readonly obstacleType: ObstacleType;
 
-    constructor(config: ObstacleSpawnConfig, x: number = GAME_CONFIG.CANVAS_WIDTH) {
-        super(x, config.y, config.width, config.height);
+    constructor(config: ObstacleSpawnConfig, canvasWidth: number) {
+        super(canvasWidth, config.y, config.width, config.height);
         this.obstacleType = config.type;
     }
 

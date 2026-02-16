@@ -8,16 +8,25 @@ import { GAME_CONFIG, PLAYER_CONFIG } from "./types";
 export class Player extends GameObject {
     private velocityY: number = 0;
     private isJumping: boolean = false;
-    private readonly groundY: number;
+    private groundY: number;
 
-    constructor() {
+    constructor(groundHeight?: number) {
+        const groundY = (groundHeight ?? 300) - PLAYER_CONFIG.HEIGHT;
         super(
             PLAYER_CONFIG.X_POSITION,
-            GAME_CONFIG.GROUND_HEIGHT - PLAYER_CONFIG.HEIGHT,
+            groundY,
             PLAYER_CONFIG.WIDTH,
             PLAYER_CONFIG.HEIGHT
         );
-        this.groundY = GAME_CONFIG.GROUND_HEIGHT - PLAYER_CONFIG.HEIGHT;
+        this.groundY = groundY;
+    }
+
+    /** Set ground level (for responsive canvas) */
+    setGroundLevel(groundHeight: number): void {
+        this.groundY = groundHeight - PLAYER_CONFIG.HEIGHT;
+        if (!this.isJumping) {
+            this.y = this.groundY;
+        }
     }
 
     /** Process physics each frame */
