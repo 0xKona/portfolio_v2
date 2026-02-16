@@ -5,6 +5,7 @@ import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import Auth from "@/components/auth/auth";
 import MainNavigationBar from "@/components/navigation/main-nav-bar";
+import { Footer } from "@/components/navigation/footer";
 import { StructuredData } from "@/components/structured-data";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -84,11 +85,14 @@ export default function RootLayout({
                 <StructuredData />
             </head>
             <body
-                className={`${jetbrainsMono.variable} min-h-dvh font-mono bg-black text-neutral-300 antialiased`}
+                className={`${jetbrainsMono.variable} min-h-dvh font-mono bg-black text-neutral-300 antialiased flex flex-col`}
             >
                 <Auth>
                     <MainNavigationBar />
-                    <div className="max-w-7xl mx-auto px-4">{children}</div>
+                    <div className="max-w-7xl mx-auto px-4 flex-1 w-full">
+                        {children}
+                    </div>
+                    <Footer />
                 </Auth>
             </body>
         </html>
