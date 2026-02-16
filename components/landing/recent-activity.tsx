@@ -83,13 +83,11 @@ export function RecentActivity() {
                   <span className="text-neutral-600 text-xs">
                     {activity.timestamp}
                   </span>
-                  <span
-                    className={`${getTypeColor(activity.type)} text-xs`}
-                  >
+                  <span className={`${getTypeColor(activity.type)} text-xs`}>
                     [{activity.action}]
                   </span>
                 </div>
-                <div className="text-neutral-400 group-hover:text-cyan-400 transition-colors break-words">
+                <div className="text-neutral-400 group-hover:text-cyan-400 transition-colors wrap-break-word">
                   {activity.description}
                 </div>
               </a>
