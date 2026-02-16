@@ -5,6 +5,7 @@ import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import Auth from "@/components/auth/auth";
 import MainNavigationBar from "@/components/navigation/main-nav-bar";
+import { StructuredData } from "@/components/structured-data";
 
 const jetbrainsMono = JetBrains_Mono({
     variable: "--font-jetbrains-mono",
@@ -79,6 +80,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
+            <head>
+                <StructuredData />
+            </head>
             <body
                 className={`${jetbrainsMono.variable} min-h-dvh font-mono bg-black text-neutral-300 antialiased`}
             >
