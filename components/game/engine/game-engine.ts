@@ -22,6 +22,11 @@ export class GameEngine {
     private ctx: CanvasRenderingContext2D | null = null;
     private animationFrameId: number | null = null;
 
+    // Canvas dimensions (set dynamically)
+    private width: number = 800;
+    private height: number = 400;
+    private groundHeight: number = 340;
+
     private player: Player;
     private obstacles: Obstacle[] = [];
     private collectibles: Collectible[] = [];
@@ -47,13 +52,21 @@ export class GameEngine {
     };
 
     constructor() {
-        this.player = new Player();
+        this.player = new Player(this.groundHeight);
     }
 
     /** Initialize engine with canvas element */
     init(canvas: HTMLCanvasElement): void {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
+        
+        // Set dimensions from canvas
+        this.width = canvas.width;
+        this.height = canvas.height;
+        this.groundHeight = Math.floor(this.height * GAME_CONFIG.GROUND_RATIO);
+        
+        // Update player ground level
+        this.player.setGroundLevel(this.groundHeight);
     }
 
     /** Set callback for game events */
@@ -140,7 +153,7 @@ export class GameEngine {
     private clearCanvas(): void {
         if (!this.ctx) return;
         this.ctx.fillStyle = "#000000";
-        this.ctx.fillRect(0, 0, GAME_CONFIG.CANVAS_WIDTH, GAME_CONFIG.CANVAS_HEIGHT);
+        this.ctx.fillRect(0, 0, this.width, this.height);
     }
 
     /** Draw ground line */
@@ -149,8 +162,8 @@ export class GameEngine {
         this.ctx.strokeStyle = "#404040";
         this.ctx.lineWidth = 2;
         this.ctx.beginPath();
-        this.ctx.moveTo(0, GAME_CONFIG.GROUND_HEIGHT);
-        this.ctx.lineTo(GAME_CONFIG.CANVAS_WIDTH, GAME_CONFIG.GROUND_HEIGHT);
+        this.ctx.moveTo(0, this.groundHeight);
+        this.ctx.lineTo(this.width, this.groundHeight);
         this.ctx.stroke();
     }
 
@@ -162,7 +175,7 @@ export class GameEngine {
         // Spawn obstacles with dynamic timing
         if (this.features.obstacles && this.frameCount - this.lastObstacleSpawn >= spawnInterval) {
             const config = this.generateObstacleConfig(difficulty);
-            this.obstacles.push(new Obstacle(config));
+            this.obstacles.push(new Obstacle(config, this.width));
             this.lastObstacleSpawn = this.frameCount;
         }
 
@@ -171,7 +184,7 @@ export class GameEngine {
         if (this.features.coins && this.frameCount - this.lastCoinSpawn >= coinInterval) {
             const coinPosition = this.findSafeCoinPosition();
             if (coinPosition) {
-                this.collectibles.push(new Coin(coinPosition.x, coinPosition.y));
+                this.collectibles.push(new Coin(this.width, this.groundHeight, coinPosition.y));
                 this.lastCoinSpawn = this.frameCount;
             }
         } 
@@ -202,14 +215,14 @@ export class GameEngine {
                 // Tall narrow obstacles
                 width = this.randomRange(OBSTACLE_CONFIG.MIN_WIDTH, OBSTACLE_CONFIG.MIN_WIDTH + 15);
                 height = this.randomRange(OBSTACLE_CONFIG.MAX_HEIGHT - 10, OBSTACLE_CONFIG.MAX_HEIGHT);
-                y = GAME_CONFIG.GROUND_HEIGHT - height;
+                y = this.groundHeight - height;
                 break;
 
             case "wide":
                 // Wide short obstacles
                 width = this.randomRange(OBSTACLE_CONFIG.MAX_WIDTH - 15, OBSTACLE_CONFIG.MAX_WIDTH);
                 height = this.randomRange(OBSTACLE_CONFIG.MIN_HEIGHT, OBSTACLE_CONFIG.MIN_HEIGHT + 20);
-                y = GAME_CONFIG.GROUND_HEIGHT - height;
+                y = this.groundHeight - height;
                 break;
 
             case "floating":
@@ -217,8 +230,8 @@ export class GameEngine {
                 width = this.randomRange(OBSTACLE_CONFIG.MIN_WIDTH, OBSTACLE_CONFIG.MIN_WIDTH + 20);
                 height = this.randomRange(OBSTACLE_CONFIG.FLOAT_MIN_HEIGHT, OBSTACLE_CONFIG.FLOAT_MAX_HEIGHT);
                 // Position so player can run under OR jump over
-                const maxFloatY = GAME_CONFIG.GROUND_HEIGHT - PLAYER_CONFIG.HEIGHT - 15; // Min clearance
-                const minFloatY = GAME_CONFIG.GROUND_HEIGHT - height - 80; // Max height to still jump over
+                const maxFloatY = this.groundHeight - PLAYER_CONFIG.HEIGHT - 15; // Min clearance
+                const minFloatY = this.groundHeight - height - 80; // Max height to still jump over
                 y = this.randomRange(Math.max(50, minFloatY), maxFloatY - height);
                 break;
 
@@ -234,7 +247,7 @@ export class GameEngine {
                     OBSTACLE_CONFIG.MIN_HEIGHT,
                     OBSTACLE_CONFIG.MIN_HEIGHT + (OBSTACLE_CONFIG.MAX_HEIGHT - OBSTACLE_CONFIG.MIN_HEIGHT) * sizeScale
                 );
-                y = GAME_CONFIG.GROUND_HEIGHT - height;
+                y = this.groundHeight - height;
                 break;
         }
 
@@ -264,14 +277,14 @@ export class GameEngine {
 
     /** Find a safe position for coin that doesn't overlap obstacles */
     private findSafeCoinPosition(): { x: number; y: number } | null {
-        const coinX = GAME_CONFIG.CANVAS_WIDTH;
+        const coinX = this.width;
 
         // Get bounds of upcoming obstacles near spawn point
         const nearbyObstacles = this.obstacles
             .filter((obs) => {
                 const bounds = obs.getBounds();
                 // Check obstacles that will be near the coin's path
-                return bounds.x > GAME_CONFIG.CANVAS_WIDTH - 200;
+                return bounds.x > this.width - 200;
             })
             .map((obs) => obs.getBounds());
 
@@ -279,7 +292,7 @@ export class GameEngine {
         const attempts = 5;
         for (let i = 0; i < attempts; i++) {
             // Random Y position for coin
-            const coinY = GAME_CONFIG.GROUND_HEIGHT - COIN_CONFIG.HEIGHT - 30 - Math.random() * 100;
+            const coinY = this.groundHeight - COIN_CONFIG.HEIGHT - 30 - Math.random() * 100;
 
             const coinBounds: Bounds = {
                 x: coinX,

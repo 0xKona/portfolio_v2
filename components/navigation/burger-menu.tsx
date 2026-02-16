@@ -3,6 +3,8 @@
  * Transforms between hamburger and close (X) states.
  */
 
+import { PixelBurger, PixelClose } from "../icons/pixel-icons";
+
 interface BurgerMenuProps {
     isOpen: boolean;
     onClick: () => void;
@@ -24,11 +26,12 @@ export function BurgerMenu({ isOpen, onClick }: BurgerMenuProps) {
             aria-expanded={isOpen}
         >
             {isOpen ? (
-                /* Close icon: bracket-enclosed X */
-                <span className="text-sm font-bold select-none">[X]</span>
+                /* Close icon: pixel X */
+                <PixelClose className="text-neutral-500" />
             ) : (
                 /* Menu icon: three horizontal bars */
-                <span className="text-m select-none">≡</span>
+                // <span className="text-m select-none">≡</span>
+                <PixelBurger className="text-neutral-500" />
             )}
         </button>
     );

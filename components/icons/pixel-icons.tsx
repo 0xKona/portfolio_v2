@@ -31,3 +31,21 @@ export function PixelEnvelope({ size = 24, className = "" }: PixelIconProps) {
         />
     );
 }
+
+export function PixelBurger({ size = 24, className = "" }: PixelIconProps) {
+    return (
+        <i
+            className={`hn hn-bars-solid ${className}`}
+            style={{ fontSize: `${size}px` }}
+        ></i>
+    );
+}
+
+export function PixelClose({ size = 24, className = "" }: PixelIconProps) {
+    return (
+        <i
+            className={`hn hn-window-close-solid ${className}`}
+            style={{ fontSize: `${size}px` }}
+        ></i>
+    );
+}

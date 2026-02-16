@@ -31,6 +31,21 @@ const schema = a.schema({
       allow.guest().to(["read"]),
       allow.authenticated().to(["read", "create", "update", "delete"])
   ]),
+  // Game scoreboard entries
+  GameScore: a.model({
+    playerName: a.string().required(),
+    // store numeric values as strings to keep model simple; convert on client
+    score: a.string().required(),
+    multiplier: a.string().required(),
+    finalScore: a.string().required(),
+    game: a.string(),
+    // optional ISO timestamp
+    createdAt: a.string(),
+  }).authorization((allow) => [
+    // Allow guests to submit and read scores (public scoreboard)
+    allow.guest().to(["read", "create"]),
+    allow.authenticated().to(["read", "create", "update", "delete"]),
+  ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

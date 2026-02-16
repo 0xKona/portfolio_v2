@@ -108,11 +108,26 @@ import {
     FaSquareGithub,
     FaSquareGitlab,
 } from "react-icons/fa6";
+import {
+    SiNextdotjs,
+    SiTypescript,
+    SiVercel,
+    SiAwsamplify,
+    SiAwslambda,
+    SiCplusplus,
+    SiTailwindcss,
+    SiGraphql,
+    SiPostgresql,
+    SiMysql,
+    SiSqlite,
+} from "react-icons/si";
 
 export const SKILL_ICONS = {
     /** Languages */
     javascript: FaJs,
     js: FaJs,
+    typescript: SiTypescript,
+    ts: SiTypescript,
     python: FaPython,
     java: FaJava,
     php: FaPhp,
@@ -120,9 +135,16 @@ export const SKILL_ICONS = {
     go: FaGolang,
     golang: FaGolang,
     swift: FaSwift,
+    "c++": SiCplusplus,
+    cpp: SiCplusplus,
 
     /** Frontend Frameworks & Libraries */
     react: FaReact,
+    "react-native": FaReact,
+    nextjs: SiNextdotjs,
+    "next.js": SiNextdotjs,
+    tailwindcss: SiTailwindcss,
+    tailwind: SiTailwindcss,
     angular: FaAngular,
     vue: FaVuejs,
     vuejs: FaVuejs,
@@ -143,6 +165,19 @@ export const SKILL_ICONS = {
     nodejs: FaNodeJs,
     npm: FaNpm,
     yarn: FaYarn,
+
+    /** Backend Services & APIs */
+    "aws-amplify": SiAwsamplify,
+    amplify: SiAwsamplify,
+    "aws-lambda": SiAwslambda,
+    lambda: SiAwslambda,
+    graphql: SiGraphql,
+    postgresql: SiPostgresql,
+    postgres: SiPostgresql,
+    mysql: SiMysql,
+    sqlite: SiSqlite,
+    "aws-dynamodb": FaAws,
+    dynamodb: FaAws,
 
     /** Version Control */
     git: FaGit,
@@ -165,6 +200,10 @@ export const SKILL_ICONS = {
     azure: FaMicrosoft,
     cloudflare: FaCloudflare,
     digitalocean: FaDigitalOcean,
+    vercel: SiVercel,
+    "aws-cdk": FaAws,
+    "aws-step-functions": FaAws,
+    "step-functions": FaAws,
 
     /** Operating Systems */
     linux: FaLinux,
