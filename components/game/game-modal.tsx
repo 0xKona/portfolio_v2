@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { PixelClose } from "../icons/pixel-icons";
 import { PlatformerGame } from "./platformer-game";
 
 interface GameModalProps {
@@ -56,10 +57,10 @@ export function GameModal({ isOpen, onClose }: GameModalProps) {
                     </div>
                     <button
                         onClick={onClose}
-                        className="font-mono text-neutral-500 hover:text-red-400 transition-colors text-sm md:text-base p-1"
+                        className="text-neutral-500 hover:text-red-400 transition-colors p-1"
                         aria-label="Close game"
                     >
-                        [X]
+                        <PixelClose size={20} />
                     </button>
                 </div>
 
@@ -78,7 +79,7 @@ export function GameModal({ isOpen, onClose }: GameModalProps) {
                         <span className="hidden md:inline">
                             Press ESC or click outside to close
                         </span>
-                        <span className="md:hidden">Tap [X] to close</span>
+                        <span className="md:hidden">Tap icon to close</span>
                     </p>
                 </div>
             </div>
