@@ -10,12 +10,14 @@ interface ProjectCardProps {
     project: Project;
     onClick?: () => void;
     className?: string;
+    showStatusRow?: boolean;
 }
 
 export function ProjectCard({
     project,
     onClick,
     className = "",
+    showStatusRow = false,
 }: ProjectCardProps) {
     const { name, desc, status, isFeatured, images, skills } = project;
 
@@ -36,22 +38,24 @@ export function ProjectCard({
             `}
         >
             {/* Status + featured badge row */}
-            <div className="flex items-center justify-between mb-2">
-                <span
-                    className={`text-xs font-mono ${
-                        status === "published"
-                            ? "text-green-400"
-                            : "text-neutral-500"
-                    }`}
-                >
-                    [{status}]
-                </span>
-                {isFeatured && (
-                    <span className="text-xs text-cyan-400 font-mono">
-                        ★ featured
+            {showStatusRow && (
+                <div className="flex items-center justify-between mb-2">
+                    <span
+                        className={`text-xs font-mono ${
+                            status === "published"
+                                ? "text-green-400"
+                                : "text-neutral-500"
+                        }`}
+                    >
+                        [{status}]
                     </span>
-                )}
-            </div>
+                    {isFeatured && (
+                        <span className="text-xs text-cyan-400 font-mono">
+                            ★ featured
+                        </span>
+                    )}
+                </div>
+            )}
 
             {/* Thumbnail */}
             {thumbnailUrl && (
