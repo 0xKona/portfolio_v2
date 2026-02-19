@@ -1,7 +1,3 @@
-/**
- * ManagerRoot — Dashboard page for managing portfolio projects.
- * Lists all projects as cards and provides navigation to the project editor.
- */
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -12,7 +8,7 @@ import Signout from "@/components/auth/sign-out";
 
 export default function ManagerRoot() {
     const router = useRouter();
-    const { projects, isLoading, error, deleteProject } = useProjects();
+    const { projects, isLoading, error } = useProjects();
 
     const handleSelect = (id: string) => {
         router.push(`/manager/${id}`);
