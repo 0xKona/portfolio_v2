@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { uploadData, getUrl, remove } from "aws-amplify/storage";
+import imageCompression from "browser-image-compression";
 
 interface UploadState {
     isUploading: boolean;
@@ -10,16 +11,12 @@ interface UploadState {
 }
 
 interface UseImageUploadReturn extends UploadState {
-    uploadImage: (file: File) => Promise<string | null>;
+    uploadImage: (file: File) => Promise<{ previewPath: string; originalPath: string } | null>;
     removeImage: (path: string) => Promise<boolean>;
     getImageUrl: (path: string) => Promise<string | null>;
     clearError: () => void;
 }
 
-/**
- * Generates a unique S3 key for a file under the projects/ prefix.
- * Uses timestamp + random string to avoid collisions.
- */
 function generateS3Key(fileName: string): string {
     const timestamp = Date.now();
     const randomSuffix = Math.random().toString(36).substring(2, 8);
@@ -34,21 +31,48 @@ export function useImageUpload(): UseImageUploadReturn {
         error: null,
     });
 
-    const uploadImage = async (file: File): Promise<string | null> => {
+    const uploadImage = async (file: File): Promise<{ previewPath: string; originalPath: string } | null> => {
         setState({ isUploading: true, progress: 0, error: null });
 
         try {
-            const key = generateS3Key(file.name);
+            // Compress for preview
+            const preview = await imageCompression(file, {
+                maxSizeMB: 0.5,
+                maxWidthOrHeight: 800,
+                useWebWorker: true,
+            });
 
+            const basePath = generateS3Key(file.name);
+            const previewPath = basePath.replace(/\.[^.]+$/, "-preview.jpg");
+            const originalPath = basePath;
+
+            // Upload preview
             await uploadData({
-                path: key,
+                path: previewPath,
+                data: preview,
+                options: {
+                    contentType: "image/jpeg",
+                    onProgress: ({ transferredBytes, totalBytes }) => {
+                        if (totalBytes) {
+                            const percent = Math.round(
+                                (transferredBytes / totalBytes) * 50
+                            );
+                            setState((prev) => ({ ...prev, progress: percent }));
+                        }
+                    },
+                },
+            }).result;
+
+            // Upload original
+            await uploadData({
+                path: originalPath,
                 data: file,
                 options: {
                     contentType: file.type,
                     onProgress: ({ transferredBytes, totalBytes }) => {
                         if (totalBytes) {
-                            const percent = Math.round(
-                                (transferredBytes / totalBytes) * 100
+                            const percent = 50 + Math.round(
+                                (transferredBytes / totalBytes) * 50
                             );
                             setState((prev) => ({ ...prev, progress: percent }));
                         }
@@ -57,7 +81,7 @@ export function useImageUpload(): UseImageUploadReturn {
             }).result;
 
             setState({ isUploading: false, progress: 100, error: null });
-            return key;
+            return { previewPath, originalPath };
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Upload failed";
@@ -69,6 +93,8 @@ export function useImageUpload(): UseImageUploadReturn {
     const removeImage = async (path: string): Promise<boolean> => {
         try {
             await remove({ path });
+            const previewPath = path.replace(/\.[^.]+$/, "-preview.jpg");
+            await remove({ path: previewPath }).catch(() => {});
             return true;
         } catch (err) {
             const message =

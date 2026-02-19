@@ -10,6 +10,7 @@ import Image from "next/image";
 import { getUrl } from "aws-amplify/storage";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { TerminalButton } from "@/components/ui/terminal-button";
+import { ImageSkeleton } from "@/components/ui/image-skeleton";
 
 interface ProjectImage {
     url: string;
@@ -51,15 +52,21 @@ function ImageThumbnail({
     onAltChange: (alt: string) => void;
 }) {
     const [resolvedUrl, setResolvedUrl] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        resolveUrl(image.url).then(setResolvedUrl);
+        resolveUrl(image.url).then((url) => {
+            setResolvedUrl(url);
+            setIsLoading(false);
+        });
     }, [image.url]);
 
     return (
         <div className="border border-neutral-700 p-2">
             {/* Thumbnail preview */}
-            {resolvedUrl ? (
+            {isLoading ? (
+                <ImageSkeleton className="w-full h-24 mb-2" />
+            ) : resolvedUrl ? (
                 <div className="relative w-full h-24 mb-2 overflow-hidden">
                     <Image
                         src={resolvedUrl}
@@ -72,7 +79,7 @@ function ImageThumbnail({
             ) : (
                 <div className="w-full h-24 mb-2 bg-neutral-900 flex items-center justify-center">
                     <span className="text-neutral-600 text-xs font-mono">
-                        loading...
+                        error loading
                     </span>
                 </div>
             )}
@@ -114,11 +121,11 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const s3Path = await uploadImage(file);
-        if (s3Path) {
+        const result = await uploadImage(file);
+        if (result) {
             onChange([
                 ...images,
-                { url: s3Path, alt: file.name.replace(/\.[^.]+$/, "") },
+                { url: result.previewPath, alt: file.name.replace(/\.[^.]+$/, "") },
             ]);
         }
 
