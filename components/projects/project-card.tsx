@@ -26,7 +26,7 @@ export function ProjectCard({
 
     // Resolve first image thumbnail
     const firstImage = images?.find((img): img is ProjectImage => img !== null);
-    const thumbnailUrl = useResolvedImageUrl(firstImage?.url);
+    const thumbnailUrl = useResolvedImageUrl(firstImage?.url, "thumb");
 
     return (
         <button
@@ -63,7 +63,9 @@ export function ProjectCard({
             {/* Thumbnail */}
             {thumbnailUrl ? (
                 <div className="relative w-full h-32 mb-3 border border-neutral-800 overflow-hidden">
-                    {!imageLoaded && <ImageSkeleton className="absolute inset-0 z-10" />}
+                    {!imageLoaded && (
+                        <ImageSkeleton className="absolute inset-0 z-10" />
+                    )}
                     <Image
                         src={thumbnailUrl}
                         alt={firstImage?.alt || name}

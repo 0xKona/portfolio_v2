@@ -1,3 +1,5 @@
+"use client";
+
 import { use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -17,17 +19,16 @@ interface ProjectDetailPageProps {
 
 /** Image component with S3 URL resolution and skeleton loading */
 function ProjectImageDisplay({ image }: { image: ProjectImage }) {
-    const resolvedUrl = useResolvedImageUrl(image.url);
-    const originalUrl = useResolvedImageUrl(
-        image.url.replace(/-preview\.jpg$/, "")
-    );
+    // Load thumbnail for blur placeholder, original for main display
+    const thumbUrl = useResolvedImageUrl(image.url, "thumb");
+    const originalUrl = useResolvedImageUrl(image.url, "original");
 
-    if (!resolvedUrl) return null;
+    if (!originalUrl) return null;
 
     return (
         <div className="border border-neutral-700">
             <div className="relative w-full aspect-video">
-                {!originalUrl ? (
+                {!thumbUrl ? (
                     <ImageSkeleton className="w-full h-full" />
                 ) : (
                     <Image
@@ -37,7 +38,7 @@ function ProjectImageDisplay({ image }: { image: ProjectImage }) {
                         className="object-cover"
                         unoptimized
                         placeholder="blur"
-                        blurDataURL={resolvedUrl}
+                        blurDataURL={thumbUrl}
                     />
                 )}
             </div>
