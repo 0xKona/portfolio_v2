@@ -24,9 +24,9 @@ export function ProjectCard({
     const { name, desc, status, isFeatured, images, skills } = project;
     const [imageLoaded, setImageLoaded] = useState(false);
 
-    // Resolve first image thumbnail
+    // Resolve first image preview
     const firstImage = images?.find((img): img is ProjectImage => img !== null);
-    const thumbnailUrl = useResolvedImageUrl(firstImage?.url, "thumb");
+    const previewUrl = useResolvedImageUrl(firstImage?.url, "preview");
 
     return (
         <button
@@ -60,14 +60,14 @@ export function ProjectCard({
                 </div>
             )}
 
-            {/* Thumbnail */}
-            {thumbnailUrl ? (
+            {/* Preview Image */}
+            {previewUrl ? (
                 <div className="relative w-full h-32 mb-3 border border-neutral-800 overflow-hidden">
                     {!imageLoaded && (
                         <ImageSkeleton className="absolute inset-0 z-10" />
                     )}
                     <Image
-                        src={thumbnailUrl}
+                        src={previewUrl}
                         alt={firstImage?.alt || name}
                         fill
                         className="object-cover"
