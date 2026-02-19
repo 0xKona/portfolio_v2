@@ -1,27 +1,32 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import type { Project, ProjectImage } from "@/types/data-types";
 import { renderIcon } from "@/lib/utils/get-icon";
 import { SkillIconName } from "@/lib/constants/skill-icons";
 import { useResolvedImageUrl } from "@/hooks/use-resolved-image-url";
+import { ImageSkeleton } from "@/components/ui/image-skeleton";
 
 interface ProjectCardProps {
     project: Project;
     onClick?: () => void;
     className?: string;
+    showStatusRow?: boolean;
 }
 
 export function ProjectCard({
     project,
     onClick,
     className = "",
+    showStatusRow = false,
 }: ProjectCardProps) {
     const { name, desc, status, isFeatured, images, skills } = project;
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     // Resolve first image thumbnail
     const firstImage = images?.find((img): img is ProjectImage => img !== null);
-    const thumbnailUrl = useResolvedImageUrl(firstImage?.url);
+    const thumbnailUrl = useResolvedImageUrl(firstImage?.url, "thumb");
 
     return (
         <button
@@ -36,35 +41,41 @@ export function ProjectCard({
             `}
         >
             {/* Status + featured badge row */}
-            <div className="flex items-center justify-between mb-2">
-                <span
-                    className={`text-xs font-mono ${
-                        status === "published"
-                            ? "text-green-400"
-                            : "text-neutral-500"
-                    }`}
-                >
-                    [{status}]
-                </span>
-                {isFeatured && (
-                    <span className="text-xs text-cyan-400 font-mono">
-                        ★ featured
+            {showStatusRow && (
+                <div className="flex items-center justify-between mb-2">
+                    <span
+                        className={`text-xs font-mono ${
+                            status === "published"
+                                ? "text-green-400"
+                                : "text-neutral-500"
+                        }`}
+                    >
+                        [{status}]
                     </span>
-                )}
-            </div>
+                    {isFeatured && (
+                        <span className="text-xs text-cyan-400 font-mono">
+                            ★ featured
+                        </span>
+                    )}
+                </div>
+            )}
 
             {/* Thumbnail */}
-            {thumbnailUrl && (
+            {thumbnailUrl ? (
                 <div className="relative w-full h-32 mb-3 border border-neutral-800 overflow-hidden">
+                    {!imageLoaded && (
+                        <ImageSkeleton className="absolute inset-0 z-10" />
+                    )}
                     <Image
                         src={thumbnailUrl}
                         alt={firstImage?.alt || name}
                         fill
                         className="object-cover"
                         unoptimized
+                        onLoad={() => setImageLoaded(true)}
                     />
                 </div>
-            )}
+            ) : null}
 
             {/* Project name */}
             <h3 className="text-neutral-300 text-sm font-mono group-hover:text-cyan-400 transition-colors mb-1">

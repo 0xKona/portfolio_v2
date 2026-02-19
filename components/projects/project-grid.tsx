@@ -19,6 +19,7 @@ interface ProjectGridProps {
     publishedOnly?: boolean;
     /** Additional CSS classes */
     className?: string;
+    managerMode?: boolean;
 }
 
 export function ProjectGrid({
@@ -26,6 +27,7 @@ export function ProjectGrid({
     featuredOnly = false,
     publishedOnly = true,
     className = "",
+    managerMode = false
 }: ProjectGridProps) {
     const router = useRouter();
     const { projects, isLoading, error } = useProjects();
@@ -95,6 +97,7 @@ export function ProjectGrid({
                         key={project.id}
                         project={project as Project}
                         onClick={() => handleProjectClick(project.id)}
+                        showStatusRow={managerMode}
                     />
                 ))}
             </div>

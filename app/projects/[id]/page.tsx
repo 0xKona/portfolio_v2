@@ -8,6 +8,7 @@ import { useResolvedImageUrl } from "@/hooks/use-resolved-image-url";
 import { TerminalLoading } from "@/components/ui/terminal-loading";
 import { TerminalErrorBox } from "@/components/ui/terminal-error-box";
 import { TerminalButton } from "@/components/ui/terminal-button";
+import { ImageSkeleton } from "@/components/ui/image-skeleton";
 import { renderIcon } from "@/lib/utils/get-icon";
 import type { SkillIconName } from "@/lib/constants/skill-icons";
 import type { ProjectImage } from "@/types/data-types";
@@ -16,22 +17,30 @@ interface ProjectDetailPageProps {
     params: Promise<{ id: string }>;
 }
 
-/** Image component with S3 URL resolution */
+/** Image component with S3 URL resolution and skeleton loading */
 function ProjectImageDisplay({ image }: { image: ProjectImage }) {
-    const resolvedUrl = useResolvedImageUrl(image.url);
+    // Load thumbnail for blur placeholder, original for main display
+    const thumbUrl = useResolvedImageUrl(image.url, "thumb");
+    const originalUrl = useResolvedImageUrl(image.url, "original");
 
-    if (!resolvedUrl) return null;
+    if (!originalUrl) return null;
 
     return (
         <div className="border border-neutral-700">
             <div className="relative w-full aspect-video">
-                <Image
-                    src={resolvedUrl}
-                    alt={image.alt}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                />
+                {!thumbUrl ? (
+                    <ImageSkeleton className="w-full h-full" />
+                ) : (
+                    <Image
+                        src={originalUrl}
+                        alt={image.alt}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                        placeholder="blur"
+                        blurDataURL={thumbUrl}
+                    />
+                )}
             </div>
             {image.caption && (
                 <p className="text-neutral-500 text-xs font-mono p-2 border-t border-neutral-800">

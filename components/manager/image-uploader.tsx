@@ -5,11 +5,12 @@
  */
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import Image from "next/image";
-import { getUrl } from "aws-amplify/storage";
 import { useImageUpload } from "@/hooks/use-image-upload";
+import { useResolvedImageUrl } from "@/hooks/use-resolved-image-url";
 import { TerminalButton } from "@/components/ui/terminal-button";
+import { ImageSkeleton } from "@/components/ui/image-skeleton";
 
 interface ProjectImage {
     url: string;
@@ -24,22 +25,6 @@ interface ImageUploaderProps {
     onChange: (images: ProjectImage[]) => void;
 }
 
-/**
- * Resolves an S3 path to a displayable URL asynchronously.
- * Returns the path itself if it's already a full URL.
- */
-async function resolveUrl(path: string): Promise<string | null> {
-    if (path.startsWith("http")) {
-        return path;
-    }
-    try {
-        const result = await getUrl({ path });
-        return result.url.toString();
-    } catch {
-        return null;
-    }
-}
-
 /** Single image thumbnail with resolved URL */
 function ImageThumbnail({
     image,
@@ -50,16 +35,16 @@ function ImageThumbnail({
     onRemove: () => void;
     onAltChange: (alt: string) => void;
 }) {
-    const [resolvedUrl, setResolvedUrl] = useState<string | null>(null);
-
-    useEffect(() => {
-        resolveUrl(image.url).then(setResolvedUrl);
-    }, [image.url]);
+    // Use thumb variant for fast loading in the manager
+    const resolvedUrl = useResolvedImageUrl(image.url, "thumb");
+    const isLoading = !resolvedUrl && !image.url.startsWith("http");
 
     return (
         <div className="border border-neutral-700 p-2">
             {/* Thumbnail preview */}
-            {resolvedUrl ? (
+            {isLoading ? (
+                <ImageSkeleton className="w-full h-24 mb-2" />
+            ) : resolvedUrl ? (
                 <div className="relative w-full h-24 mb-2 overflow-hidden">
                     <Image
                         src={resolvedUrl}
@@ -72,7 +57,7 @@ function ImageThumbnail({
             ) : (
                 <div className="w-full h-24 mb-2 bg-neutral-900 flex items-center justify-center">
                     <span className="text-neutral-600 text-xs font-mono">
-                        loading...
+                        error loading
                     </span>
                 </div>
             )}
@@ -114,11 +99,15 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const s3Path = await uploadImage(file);
-        if (s3Path) {
+        const result = await uploadImage(file);
+        if (result) {
+            // Store the basePath - variants are derived from it using naming conventions
             onChange([
                 ...images,
-                { url: s3Path, alt: file.name.replace(/\.[^.]+$/, "") },
+                {
+                    url: result.basePath,
+                    alt: file.name.replace(/\.[^.]+$/, ""),
+                },
             ]);
         }
 

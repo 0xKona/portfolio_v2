@@ -56,6 +56,7 @@ export function ProjectList({
                     key={project.id}
                     project={project}
                     onClick={() => onSelect(project.id)}
+                    showStatusRow={true}
                 />
             ))}
         </div>
